@@ -11,7 +11,7 @@ use crate::piece::PieceKind::*;
 use crate::sq::*;
 
 fn main() {
-  let board = &Board::new();
+  let board = &Board::from_file("boards/initial.txt");
   let piece = Piece { kind: Bishop, color: White };
   let moves = piece.moves(Sq { x: 4, y: 4 }, board);
   println!("Moves: {:?}", moves);

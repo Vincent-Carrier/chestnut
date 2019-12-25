@@ -57,7 +57,7 @@ fn slide(from: Sq, towards: Vec2, color: Color, board: &Board,
   loop {
     let candidate = from + towards.scale(i);
     if candidate.inside_board() && i <= max {
-      match board.at(&candidate) {
+      match board.at(candidate) {
         None => sqs.push(candidate),
         Some(p) if p.color == color || !can_capture => return sqs,
         Some(_) => { sqs.push(candidate); return sqs },
