@@ -1,5 +1,6 @@
 use crate::color::*;
 
+#[derive(Clone)]
 pub enum PieceKind {
   Pawn, Knight, Bishop, Rook, Queen, King
 }
@@ -20,6 +21,7 @@ impl PieceKind {
 
 }
 
+#[derive(Clone)]
 pub struct Piece {
   pub kind: PieceKind,
   pub color: Color

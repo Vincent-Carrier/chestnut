@@ -7,6 +7,7 @@ use crate::piece::{*, PieceKind::*};
 use std::fs::File;
 use std::io::prelude::*;
 
+#[derive(Clone)]
 pub struct Board {
   pieces: HashMap<Sq, Piece>
 }

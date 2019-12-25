@@ -3,6 +3,10 @@ mod color;
 mod movement;
 mod piece;
 mod sq;
+mod moves;
+mod state;
+mod player;
+mod ui;
 
 use crate::board::*;
 use crate::color::Color::*;

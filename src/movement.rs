@@ -107,7 +107,7 @@ impl Piece {
   }
 }
 
-pub fn display_moves(moves: &Vec<Vec2>) {
+pub fn display_moves(moves: &[Vec2]) {
   for y in 0..8 {
     for x in 0..8 {
       if moves.contains(&Sq { x: x as i32, y: y as i32 }) {
