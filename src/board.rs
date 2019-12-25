@@ -51,4 +51,8 @@ impl Board {
     }
     result
   }
+
+  pub fn initial() -> Board {
+    Board::from_file("boards/initial.txt")
+  }
 }

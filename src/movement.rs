@@ -50,16 +50,24 @@ static STRAIGHT_LINES   : [Vec2; 4] = four_directions(Vec2 { x: 0, y: 1 });
 static KNIGHT_DIRECTIONS: [Vec2; 8] = knight_directions(Vec2 { x: 1, y: 2 });
 static EIGHT_DIRECTIONS : [Vec2; 8] = eight_directions(Vec2 { x: 1, y: 1 });
 
+#[derive(PartialEq)]
+enum CaptureStyle {
+  Can, Cannot, Must
+}
+
+use crate::movement::CaptureStyle::*;
+
 fn slide(from: Sq, towards: Vec2, color: Color, board: &Board,
-         max: i32, can_capture: bool) -> Vec<Sq> {
+         max: i32, capture_style: CaptureStyle) -> Vec<Sq> {
   let mut sqs: Vec<Sq> = Vec::new();
   let mut i = 1;
   loop {
     let candidate = from + towards.scale(i);
     if candidate.inside_board() && i <= max {
       match board.at(candidate) {
+        None if capture_style == Must => return sqs,
         None => sqs.push(candidate),
-        Some(p) if p.color == color || !can_capture => return sqs,
+        Some(p) if p.color == color || capture_style == Cannot => return sqs,
         Some(_) => { sqs.push(candidate); return sqs },
       }
     } else {
@@ -80,21 +88,34 @@ impl Piece {
           Vec2 { x: -1, y: self.color.forward() },
           Vec2 { x: 1, y: self.color.forward() },
         ];
-        let forward_moves = slide(from, forward_dir, self.color, board, forward_dist, false);
+        let forward_moves = slide(from, forward_dir, self.color, board, forward_dist, Cannot);
         let capture_moves: Vec<Vec2> = capture_dirs.iter().flat_map(
-                                       |&dir| slide(from, dir, self.color, board, 1, true)).collect();
+                                       |&dir| slide(from, dir, self.color, board, 1, Must)).collect();
         [&forward_moves[..], &capture_moves[..]].concat()
       }
       Knight => KNIGHT_DIRECTIONS.iter().flat_map(
-                |&dir| slide(from, dir, self.color, board, 1, true)).collect(),
+                |&dir| slide(from, dir, self.color, board, 1, Can)).collect(),
       Bishop => DIAGONALS.iter().flat_map(
-                |&dir| slide(from, dir, self.color, board, 8, true)).collect(),
+                |&dir| slide(from, dir, self.color, board, 8, Can)).collect(),
       Rook   => STRAIGHT_LINES.iter().flat_map(
-                |&dir| slide(from, dir, self.color, board, 8, true)).collect(),
+                |&dir| slide(from, dir, self.color, board, 8, Can)).collect(),
       Queen  => EIGHT_DIRECTIONS.iter().flat_map(
-                |&dir| slide(from, dir, self.color, board, 8, true)).collect(),
+                |&dir| slide(from, dir, self.color, board, 8, Can)).collect(),
       King   => EIGHT_DIRECTIONS.iter().flat_map(
-                |&dir| slide(from, dir, self.color, board, 1, true)).collect(),
+                |&dir| slide(from, dir, self.color, board, 1, Can)).collect(),
     }
+  }
+}
+
+pub fn display_moves(moves: &Vec<Vec2>) {
+  for y in 0..8 {
+    for x in 0..8 {
+      if moves.contains(&Sq { x: x as i32, y: y as i32 }) {
+        print!("X");
+      } else {
+        print!(".")
+      }
+    }
+    println!();
   }
 }
