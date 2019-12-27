@@ -1,6 +1,5 @@
 use crate::piece::Piece;
 use crate::sq::*;
-use crate::color::{*, Color::*};
 use crate::board::*;
 use crate::state::*;
 
@@ -10,8 +9,10 @@ pub trait Move {
   fn undo(&self, s: &State) -> Board;
 }
 
+pub type MovePtr = Box<dyn Move>;
+
 pub struct NormalMove {
-  from: Sq, to: Sq
+  pub from: Sq, pub to: Sq
 }
 
 impl Move for NormalMove {
@@ -25,10 +26,15 @@ impl Move for NormalMove {
 
   fn execute(&self, s: &State) -> Board {
     let mut board = s.board.clone();
+    let piece = board.piece_at(self.from);
+    board.set_at(self.to, piece);
+    board.clear(self.from);
+    board
   }
 
   fn undo(&self, s: &State) -> Board {
-
+    let mv = NormalMove { from: self.to, to: self.from };
+    mv.execute(s)
   }
 }
 
@@ -36,7 +42,7 @@ pub struct CaptureMove {
   mv: NormalMove, capture: Piece
 }
 
-enum Side { Queen, King }
+pub enum Side { Queen, King }
 
 pub struct CastleMove {
   side: Side

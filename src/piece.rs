@@ -1,6 +1,6 @@
-use crate::color::*;
+use crate::color::{*, Color::*};
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub enum PieceKind {
   Pawn, Knight, Bishop, Rook, Queen, King
 }
@@ -21,8 +21,15 @@ impl PieceKind {
 
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Piece {
   pub kind: PieceKind,
   pub color: Color
+}
+
+impl Piece {
+  pub fn char(&self) -> char {
+    let ch = self.kind.char();
+    if self.color == White { ch } else { ch.to_ascii_lowercase() }
+  }
 }

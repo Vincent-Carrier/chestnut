@@ -1,3 +1,7 @@
+#[macro_use]
+extern crate lazy_static;
+extern crate regex;
+
 mod board;
 mod color;
 mod movement;
@@ -7,17 +11,11 @@ mod moves;
 mod state;
 mod player;
 mod ui;
+mod game;
 
-use crate::board::*;
-use crate::color::Color::*;
-use crate::piece::*;
-use crate::piece::PieceKind::*;
-use crate::sq::*;
+use crate::game::Game;
 
 fn main() {
-  let board = &Board::initial();
-  let piece = Piece { kind: Bishop, color: White };
-  let moves = piece.moves(Sq { x: 4, y: 4 }, board);
-  println!("Moves:");
-  movement::display_moves(&moves);
+  let game = Game::new();
+  game.start();
 }
