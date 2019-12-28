@@ -6,7 +6,7 @@ use regex::Regex;
 
 
 pub trait UI {
-  fn prompt_move(&self, s: &State) -> Option<MovePtr>;
+  fn prompt_move(&self, s: &State) -> Option<Move>;
   fn prompt_turn(&self, s: &State);
 }
 
@@ -21,10 +21,10 @@ impl CLI {
 impl UI for CLI {
   fn prompt_turn(&self, s: &State) {
     println!("{}", s.board);
-    println!("It's {:?}'s turn to play!", s.active_player.color);
+    println!("It's {:?}'s turn to play!", s.active_color);
   }
 
-  fn prompt_move(&self, s: &State) -> Option<MovePtr> {
+  fn prompt_move(&self, s: &State) -> Option<Move> {
     println!("Please enter your move: ");
     let mut move_str = String::new();
     stdin().read_line(&mut move_str).unwrap();
@@ -37,7 +37,7 @@ static SQ: &str    = r"([a-h][1-8])";
 static PIECE: &str = r"([BNRQK])";
 lazy_static! {
   static ref PAWN: Regex = Regex::new(SQ).unwrap();
-  static ref PAWN_VERBOSE: Regex = Regex::new(&format!("^{}-{}$", SQ, SQ)).unwrap();
+  static ref PAWN_VERBOSE: Regex = Regex::new(&format!("{}-{}", SQ, SQ)).unwrap();
   static ref PAWN_CAPTURE: Regex = Regex::new(&format!("^{}x{}$", SQ, SQ)).unwrap();
   static ref NORMAL: Regex = Regex::new(&format!("^{}-{}$", PIECE, SQ)).unwrap();
   static ref NORMAL_VERBOSE: Regex = Regex::new(&format!("^{}{}-{}$", PIECE, SQ, SQ)).unwrap();
@@ -53,13 +53,13 @@ fn parse_sq(input: &str) -> Sq {
   }
 }
 
-fn parse_move(input: String, s: &State) -> Result<MovePtr, &'static str> {
-  let mv: MovePtr = match input {
+fn parse_move(input: String, s: &State) -> Result<Move, &'static str> {
+  let mv: Move = match input {
     // "O-O" => Box::new(CastleMove { side: Side::King }),
     // "O-O-O" => Box::new(CastleMove { side: Side::Queen }),
     _ => {
       if PAWN_VERBOSE.is_match(&input) {
-        Box::new(NormalMove { from: parse_sq(&input[0..2]), to: parse_sq(&input[3..5]) })
+        Move::Normal { from: parse_sq(&input[..2]), to: parse_sq(&input[3..]) }
       } else {
         panic!("Notation not implemented")
       }

@@ -20,8 +20,9 @@ impl fmt::Display for Board {
       for x in 0..8 {
         let content = self.at(Sq { x, y });
         let ch = match content {
-          Some(p) => p.char(),
-          None => '.'
+          Some(p) => p.unicode_char(),
+          None if (x + y) % 2 == 0 => ' ',
+          _ => '◯'
         };
         output.push(ch);
       }

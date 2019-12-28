@@ -3,51 +3,72 @@ use crate::sq::*;
 use crate::board::*;
 use crate::state::*;
 
-pub trait Move {
-  fn valid(&self, s: &State) -> bool;
-  fn execute(&self, s: &State) -> Board;
-  fn undo(&self, s: &State) -> Board;
+#[derive(Clone, Copy)]
+pub enum Side { Queen, King }
+
+#[derive(Clone, Copy)]
+pub enum Move {
+  Normal    { from: Sq, to: Sq },
+  Capture   { from: Sq, to: Sq, capture: Piece },
+  EnPassant { from: Sq, to: Sq },
+  Castle    { side: Side },
 }
 
-pub type MovePtr = Box<dyn Move>;
+pub use self::Move::*;
 
-pub struct NormalMove {
-  pub from: Sq, pub to: Sq
-}
-
-impl Move for NormalMove {
-  fn valid(&self, s: &State) -> bool {
-    let active_color = s.active_player.color;
-    match s.board.at(self.from) {
-      Some(p) => p.color == active_color && s.board.at(self.to).is_none(),
-      _ => false
+impl Move {
+  pub fn valid  (&self, s: &State) -> bool {
+    match self {
+      Normal { from, to } => {
+        valid(*from, *to, s)
+      },
+      Capture { from, to, capture } => {
+        false
+      },
+      EnPassant { from, to } => {
+        false
+      },
+      Castle { side } => {
+        false
+      },
     }
   }
 
-  fn execute(&self, s: &State) -> Board {
-    let mut board = s.board.clone();
-    let piece = board.piece_at(self.from);
-    board.set_at(self.to, piece);
-    board.clear(self.from);
-    board
+  pub fn execute(&self, s: &State) -> Board {
+    match self {
+      Normal { from, to } => {
+        let mut board = s.board.clone();
+        let piece = board.piece_at(*from);
+        board.set_at(*to, piece);
+        board.clear(*from);
+        board
+      },
+      Capture { from, to, capture } => {
+        panic!("Not implemented")
+      },
+      EnPassant { from, to } => {
+        panic!("Not implemented")
+      },
+      Castle { side } => {
+        panic!("Not implemented")
+      },
+    }
   }
 
-  fn undo(&self, s: &State) -> Board {
-    let mv = NormalMove { from: self.to, to: self.from };
-    mv.execute(s)
+  pub fn undo   (&self, s: &State) -> Board {
+    panic!("Not implemented")
   }
 }
 
-pub struct CaptureMove {
-  mv: NormalMove, capture: Piece
-}
 
-pub enum Side { Queen, King }
-
-pub struct CastleMove {
-  side: Side
+fn valid(from: Sq, to: Sq, State { board, active_color, .. }: &State) -> bool {
+  match board.at(from) {
+    Some(p) => p.color == *active_color && board.at(to).is_none(),
+    _ => false
+  }
 }
+// fn undo(&self, s: &State) -> Board {
+//   let mv = NormalMove { from: self.to, to: self.from };
+//   mv.execute(s)
+// }
 
-pub struct EnPassantMove {
-  mv: NormalMove, capture: Piece
-}

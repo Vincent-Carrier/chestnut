@@ -3,7 +3,8 @@ pub enum Color {
   White, Black,
 }
 
-use crate::color::Color::*;
+
+pub use self::Color::*;
 
 impl Color {
   pub fn opposite(self) -> Color {

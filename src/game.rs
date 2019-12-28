@@ -1,13 +1,15 @@
+use crate::color::Color::*;
+use crate::state::KingState::Safe;
 use crate::player::Player;
-use crate::color::Color::Black;
-use crate::color::Color::White;
 use crate::player::PlayerKind::Human;
 use crate::board::Board;
-use crate::state::State;
+use crate::state::{State, CastlingState};
 use crate::ui::CLI;
 
 pub struct Game {
-  state: State
+  state: State,
+  white_player: Player,
+  black_player: Player,
 }
 
 impl Game {
@@ -15,23 +17,34 @@ impl Game {
     Game {
       state: State {
         board: Board::from_file("boards/initial.txt"),
-        history: vec![],
-        active_player: Player { color: White, kind: Human(CLI::new()) },
-        passive_player: Player { color: Black, kind: Human(CLI::new()) },
-        in_check: false
-      }
+        king_state: Safe,
+        active_color: White,
+        white_castling_state: CastlingState::new(),
+        black_castling_state: CastlingState::new(),
+        last_move: None,
+      },
+      white_player: Player { kind: Human(CLI::new()) },
+      black_player: Player { kind: Human(CLI::new()) },
     }
   }
 
-  pub fn start(&self) {
+  pub fn start(&mut self) {
     loop {
-      match self.active_player.kind {
+      let player = match self.state.active_color {
+        White => &self.white_player,
+        Black => &self.black_player,
+      };
+      let mv = match &player.kind {
         Human(cli) => {
-
-          let mv = cli.prompt_move()
+          cli.prompt_turn(&self.state);
+          loop {
+            if let Some(m) = cli.prompt_move(&self.state) { break m } else { continue }
+          }
         },
         _ => panic!("Not implemented")
-      }
+      };
+      let new_state = self.state.reduce(mv);
+      self.state = new_state;
     }
   }
 }

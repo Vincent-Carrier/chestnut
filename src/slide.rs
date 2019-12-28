@@ -1,3 +1,4 @@
+use core::ops::Range;
 use std::ops;
 use crate::sq::*;
 use crate::color::*;
@@ -12,6 +13,8 @@ impl ops::Add<Vec2> for Vec2 {
     Vec2 { x: self.x + _rhs.x, y: self.y + _rhs.y }
   }
 }
+
+// static BOUNDS: Range = Range { start: 0, end: 8 };
 
 impl Vec2 {
   fn scale(self, n: i32) -> Vec2 {
@@ -55,7 +58,7 @@ enum CaptureStyle {
   Can, Cannot, Must
 }
 
-use crate::movement::CaptureStyle::*;
+use crate::slide::CaptureStyle::*;
 
 fn slide(from: Sq, towards: Vec2, color: Color, board: &Board,
          max: i32, capture_style: CaptureStyle) -> Vec<Sq> {

@@ -1,4 +1,3 @@
-use crate::color::*;
 use crate::ui::UI;
 
 pub enum PlayerKind {
@@ -6,6 +5,5 @@ pub enum PlayerKind {
 }
 
 pub struct Player {
-  pub color: Color,
   pub kind: PlayerKind
 }

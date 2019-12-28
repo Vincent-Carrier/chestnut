@@ -1,10 +1,9 @@
 #[macro_use]
 extern crate lazy_static;
-extern crate regex;
 
 mod board;
 mod color;
-mod movement;
+mod slide;
 mod piece;
 mod sq;
 mod moves;
@@ -16,6 +15,6 @@ mod game;
 use crate::game::Game;
 
 fn main() {
-  let game = Game::new();
+  let mut game = Game::new();
   game.start();
 }
