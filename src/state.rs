@@ -5,6 +5,7 @@ use crate::moves::*;
 
 pub type History = Vec<Move>;
 
+#[derive(PartialEq)]
 pub enum KingState {
   Safe, Check, Checkmate, Stalemate
 }

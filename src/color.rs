@@ -1,25 +1,26 @@
+use crate::sq::SqSize;
+pub use self::Color::*;
+
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub enum Color {
   White, Black,
 }
 
 
-pub use self::Color::*;
-
 impl Color {
   pub fn opposite(self) -> Color {
     if self == White { Black } else { White }
   }
 
-  pub fn pawn_row(self) -> i32 {
+  pub fn pawn_row(self) -> SqSize {
     if self == White { 6 } else { 1 }
   }
 
-  pub fn home_row(self) -> i32 {
+  pub fn home_row(self) -> SqSize {
     if self == White { 7 } else { 0 }
   }
 
-  pub fn forward(self) -> i32 {
+  pub fn forward(self) -> SqSize {
     if self == White { -1 } else { 1 }
   }
 }

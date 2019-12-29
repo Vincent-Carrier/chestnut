@@ -1,9 +1,8 @@
+use crate::state::KingState::Checkmate;
 use crate::color::Color::*;
-use crate::state::KingState::Safe;
 use crate::player::Player;
 use crate::player::PlayerKind::Human;
-use crate::board::Board;
-use crate::state::{State, CastlingState};
+use crate::state::State;
 use crate::ui::CLI;
 
 pub struct Game {
@@ -15,21 +14,14 @@ pub struct Game {
 impl Game {
   pub fn new() -> Game {
     Game {
-      state: State {
-        board: Board::from_file("boards/initial.txt"),
-        king_state: Safe,
-        active_color: White,
-        white_castling_state: CastlingState::new(),
-        black_castling_state: CastlingState::new(),
-        last_move: None,
-      },
+      state: State::new(),
       white_player: Player { kind: Human(CLI::new()) },
       black_player: Player { kind: Human(CLI::new()) },
     }
   }
 
   pub fn start(&mut self) {
-    loop {
+    while self.state.king_state != Checkmate {
       let player = match self.state.active_color {
         White => &self.white_player,
         Black => &self.black_player,

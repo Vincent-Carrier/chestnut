@@ -48,8 +48,8 @@ lazy_static! {
 fn parse_sq(input: &str) -> Sq {
   let chars = input.as_bytes();
   Sq {
-    x: chars[0] as i32 - 97,
-    y: 56 - chars[1] as i32
+    x: chars[0] as SqSize - 97,
+    y: 56 - chars[1] as SqSize
   }
 }
 

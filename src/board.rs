@@ -1,6 +1,5 @@
 #![allow(overflowing_literals)]
 
-use std::collections::HashMap;
 use crate::sq::*;
 use crate::color::Color::*;
 use crate::piece::{*, PieceKind::*};
@@ -10,7 +9,7 @@ use std::io::prelude::*;
 
 #[derive(Clone)]
 pub struct Board {
-  pieces: HashMap<Sq, Piece>
+  pieces: [[Option<Piece>; 8]; 8]
 }
 
 impl fmt::Display for Board {
@@ -32,25 +31,39 @@ impl fmt::Display for Board {
   }
 }
 
+impl std::ops::Index<Sq> for Board {
+  type Output = Option<Piece>;
+
+  fn index(&self, sq: Sq) -> &Self::Output {
+    &self.pieces[sq.y as usize][sq.x as usize]
+  }
+}
+
+impl std::ops::IndexMut<Sq> for Board {
+  fn index_mut(&mut self, sq: Sq) -> &mut Self::Output {
+    &mut self[sq]
+  }
+}
+
 impl Board {
-  pub fn at(&self, sq: Sq) -> Option<&Piece> {
-    self.pieces.get(&sq)
+  pub fn at(&self, sq: Sq) -> Option<Piece> {
+    self[sq]
   }
 
   pub fn piece_at(&self, sq: Sq) -> Piece {
-    self.pieces[&sq]
+    self.at(sq).unwrap()
   }
 
   pub fn set_at(&mut self, sq: Sq, piece: Piece) {
-    self.pieces.insert(sq, piece);
+    self[sq] = Some(piece);
   }
 
   pub fn clear(&mut self, sq: Sq) {
-    self.pieces.remove(&sq);
+    self[sq] = None;
   }
 
   pub fn new() -> Board {
-    Board { pieces: HashMap::new() }
+    Board { pieces: [[None; 8]; 8] }
   }
 
   pub fn from_file(file: &'static str) -> Board {
@@ -72,7 +85,7 @@ impl Board {
              _  => panic!("Unexpected character")
           };
           result.set_at(
-            Sq { x: x as i32, y: y as i32 },
+            Sq { x: x as SqSize, y: y as SqSize },
             Piece { color, kind }
           )
         }
