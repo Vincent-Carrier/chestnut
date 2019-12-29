@@ -53,13 +53,17 @@ fn parse_sq(input: &str) -> Sq {
   }
 }
 
-fn parse_move(input: String, s: &State) -> Result<Move, &'static str> {
-  let mv: Move = match input {
-    // "O-O" => Box::new(CastleMove { side: Side::King }),
-    // "O-O-O" => Box::new(CastleMove { side: Side::Queen }),
+fn parse_move(input: &str, s: &State) -> Result<Move, &'static str> {
+  let mv = match input {
+    "O-O" => Move::Castle { side: Side::King },
+    "O-O-O" => Move::Castle { side: Side::Queen },
     _ => {
       if PAWN_VERBOSE.is_match(&input) {
-        Move::Normal { from: parse_sq(&input[..2]), to: parse_sq(&input[3..]) }
+        Move::Normal {
+          from: parse_sq(&input[..2]),
+          to: parse_sq(&input[3..]),
+          capture: None,
+        }
       } else {
         panic!("Notation not implemented")
       }

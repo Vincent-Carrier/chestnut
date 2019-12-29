@@ -8,10 +8,9 @@ pub enum Side { Queen, King }
 
 #[derive(Clone, Copy)]
 pub enum Move {
-  Normal    { from: Sq, to: Sq },
-  Capture   { from: Sq, to: Sq, capture: Piece },
-  EnPassant { from: Sq, to: Sq },
-  Castle    { side: Side },
+  Normal    { piece: Piece, from: Sq, to: Sq, capture: Option<Piece> },
+  Castle    { piece: Piece, side: Side },
+  EnPassant { piece: Piece, },
 }
 
 pub use self::Move::*;
@@ -19,40 +18,40 @@ pub use self::Move::*;
 impl Move {
   pub fn valid  (&self, s: &State) -> bool {
     match self {
-      Normal { from, to } => {
-        valid(*from, *to, s)
+      Normal { piece, from, to, capture } => {
+        match s.board.at(*from) {
+          Some(p) => {
+            p.color == s.active_color &&
+            capture.as_ref() == s.board.at(*to)
+          },
+          None => false
+        }
       },
-      Capture { from, to, capture } => {
-        false
+      Castle { side, .. } => {
+        s.can_castle()
       },
-      EnPassant { from, to } => {
-        false
-      },
-      Castle { side } => {
+      EnPassant  { piece }=> {
         false
       },
     }
   }
 
   pub fn execute(&self, s: &State) -> Board {
+    let mut board = s.board.clone();
     match self {
-      Normal { from, to } => {
-        let mut board = s.board.clone();
+      Normal { from, to, .. } => {
         let piece = board.piece_at(*from);
         board.set_at(*to, piece);
         board.clear(*from);
-        board
       },
-      Capture { from, to, capture } => {
-        panic!("Not implemented")
-      },
-      EnPassant { from, to } => {
+      EnPassant => {
         panic!("Not implemented")
       },
       Castle { side } => {
         panic!("Not implemented")
       },
     }
+    board
   }
 
   pub fn undo   (&self, s: &State) -> Board {
@@ -62,10 +61,6 @@ impl Move {
 
 
 fn valid(from: Sq, to: Sq, State { board, active_color, .. }: &State) -> bool {
-  match board.at(from) {
-    Some(p) => p.color == *active_color && board.at(to).is_none(),
-    _ => false
-  }
 }
 // fn undo(&self, s: &State) -> Board {
 //   let mv = NormalMove { from: self.to, to: self.from };
