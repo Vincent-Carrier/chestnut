@@ -1,7 +1,7 @@
-use crate::state::KingState::Checkmate;
 use crate::color::Color::*;
 use crate::player::Player;
 use crate::player::PlayerKind::Human;
+use crate::state::KingState::Checkmate;
 use crate::state::State;
 use crate::ui::CLI;
 

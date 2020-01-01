@@ -16,21 +16,20 @@ pub enum Move {
 pub use self::Move::*;
 
 impl Move {
-  pub fn valid  (&self, s: &State) -> bool {
+  pub fn valid (&self, s: &State) -> bool {
     match self {
       Normal { piece, from, to, capture } => {
-        match s.board.at(*from) {
+        match s.board[*from] {
           Some(p) => {
-            p.color == s.active_color &&
-            capture.as_ref() == s.board.at(*to)
+            p.color == s.active_color && *capture == s.board[*to]
           },
           None => false
         }
       },
-      Castle { side, .. } => {
-        s.can_castle()
+      Castle { side, .. }=> {
+        s.can_castle(s.active_color, *side)
       },
-      EnPassant  { piece }=> {
+      EnPassant { piece } => {
         false
       },
     }
@@ -39,29 +38,26 @@ impl Move {
   pub fn execute(&self, s: &State) -> Board {
     let mut board = s.board.clone();
     match self {
-      Normal { from, to, .. } => {
-        let piece = board.piece_at(*from);
-        board.set_at(*to, piece);
-        board.clear(*from);
+      Normal { from, to, piece, .. } => {
+        board[to] = Some(piece);
+        board[from] = None;
       },
-      EnPassant => {
+      EnPassant { piece } => {
         panic!("Not implemented")
       },
-      Castle { side } => {
+      Castle { side, piece } => {
         panic!("Not implemented")
       },
     }
     board
   }
 
-  pub fn undo   (&self, s: &State) -> Board {
+  pub fn undo (&self, s: &State) -> Board {
     panic!("Not implemented")
   }
 }
 
 
-fn valid(from: Sq, to: Sq, State { board, active_color, .. }: &State) -> bool {
-}
 // fn undo(&self, s: &State) -> Board {
 //   let mv = NormalMove { from: self.to, to: self.from };
 //   mv.execute(s)

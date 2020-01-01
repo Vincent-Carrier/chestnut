@@ -1,4 +1,3 @@
-use core::ops::Range;
 use std::ops;
 use crate::sq::*;
 use crate::color::*;
@@ -32,6 +31,7 @@ impl Vec2 {
 }
 
 // Rust's lack of compile-time loops is infuriating
+// TODO: Fix with lazy-static
 const fn four_directions(dir: Vec2) -> [Vec2; 4] {
   [ dir, dir.rotate(), dir.rotate().rotate(), dir.rotate().rotate().rotate() ]
 }
@@ -67,7 +67,7 @@ fn slide(from: Sq, towards: Vec2, color: Color, board: &Board,
   loop {
     let candidate = from + towards.scale(i);
     if candidate.inside_board() && i <= max {
-      match board.at(candidate) {
+      match board[candidate] {
         None if capture_style == Must => return sqs,
         None => sqs.push(candidate),
         Some(p) if p.color == color || capture_style == Cannot => return sqs,
@@ -107,6 +107,30 @@ impl Piece {
       King   => EIGHT_DIRECTIONS.iter().flat_map(
                 |&dir| slide(from, dir, self.color, board, 1, Can)).collect(),
     }
+  }
+
+  pub iter(&self) -> Iter {
+    Iter {
+      piece: self,
+
+    }
+  }
+}
+
+struct Iter<'a> {
+  piece: &'a Piece
+  dirs: &'static [Vec2],
+  dir_i: usize,
+  i: SqSize,
+  capturing: CaptureStyle,
+
+}
+
+impl Iterator for Iter<'_> {
+  type Item = Sq;
+
+  fn next(&mut self) -> Option<Self::Item> {
+
   }
 }
 

@@ -1,5 +1,4 @@
-use crate::color::Color::White;
-use crate::color::Color;
+use crate::color::{Color,*};
 use crate::board::*;
 use crate::moves::*;
 
@@ -12,6 +11,7 @@ pub enum KingState {
 
 pub use self::KingState::*;
 
+#[derive(Clone, Copy)]
 struct CastlingRights {
   white_queen_castle: bool,
   white_king_castle: bool,
@@ -30,7 +30,7 @@ pub struct State {
 impl State {
   pub fn new() -> State {
     State {
-      board: *INITIAL_BOARD,
+      board: INITIAL_BOARD.clone(),
       active_color: White,
       king_state: Safe,
       last_move: None,
@@ -44,12 +44,12 @@ impl State {
   }
 
   pub fn can_castle(&self, color: Color, side: Side) -> bool {
-    let rights = self.castling_rights;
+    let rights = &self.castling_rights;
     match (color, side) {
-      (White, Queen) => rights.white_queen_castle,
-      (Black, Queen) => rights.black_queen_castle,
-      (Black, King)  => rights.black_king_castle,
-      (White, King)  => rights.white_king_castle,
+      (White, Side::Queen) => rights.white_queen_castle,
+      (Black, Side::Queen) => rights.black_queen_castle,
+      (Black, Side::King)  => rights.black_king_castle,
+      (White, Side::King)  => rights.white_king_castle,
     }
   }
 
@@ -61,5 +61,12 @@ impl State {
       last_move: Some(mv),
       castling_rights: self.castling_rights,
     }
+  }
+
+  pub fn all_moves(&self) -> Vec<Move> {
+    let basic_moves = self.board.pieces_of(self.active_color).iter().map(
+      |(sq, piece)| piece.moves(*sq, &self.board)
+    ).collect();
+    // TODO: Castling, EnPassant, Promotion
   }
 }

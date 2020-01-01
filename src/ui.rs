@@ -1,7 +1,8 @@
+use core::sq::SqSize;
 use std::io::stdin;
-use crate::state::State;
-use crate::sq::Sq;
-use crate::moves::*;
+use core::state::State;
+use core::sq::Sq;
+use core::moves::*;
 use regex::Regex;
 
 
@@ -28,7 +29,7 @@ impl UI for CLI {
     println!("Please enter your move: ");
     let mut move_str = String::new();
     stdin().read_line(&mut move_str).unwrap();
-    let mv = parse_move(move_str, s).unwrap();
+    let mv = parse_move(&move_str, s).unwrap();
     Some(mv)
   }
 }
@@ -55,8 +56,8 @@ fn parse_sq(input: &str) -> Sq {
 
 fn parse_move(input: &str, s: &State) -> Result<Move, &'static str> {
   let mv = match input {
-    "O-O" => Move::Castle { side: Side::King },
-    "O-O-O" => Move::Castle { side: Side::Queen },
+    "O-O" => Move::Castle { side: Side::King, piece: King { color: s.active_color } },
+    "O-O-O" => Move::Castle { side: Side::Queen, piece: King { color: s.active_color } },
     _ => {
       if PAWN_VERBOSE.is_match(&input) {
         Move::Normal {
