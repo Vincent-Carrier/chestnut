@@ -1,24 +1,17 @@
-#![allow(overflowing_literals)]
-
 use crate::color::Color;
 use crate::sq::*;
 use crate::color::Color::*;
 use crate::piece::{*, PieceKind::*};
+use crate::board_iter;
 use std::fmt;
 use std::fs::File;
 use std::io::prelude::*;
 
-struct Iter<'a> {
-  counter: Sq,
-  board: &'a Board
-}
 
 #[derive(Clone, Default)]
 pub struct Board {
   pieces: [[Option<Piece>; 8]; 8],
 }
-
-pub type PieceList = Vec<(Sq, Piece)>;
 
 impl fmt::Display for Board {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -49,51 +42,25 @@ impl std::ops::IndexMut<Sq> for Board {
   }
 }
 
-
-impl Iterator for Iter<'_> {
-  type Item = (Sq, Option<Piece>);
-
-  fn next(&mut self) -> Option<Self::Item> {
-    let counter = self.counter;
-    if counter.x == 7 {
-      counter.y += 1;
-    } else {
-      counter.x += 1;
-    }
-    if counter.y > 7 { None } else {
-      let sq = Sq { x: counter.x, y: counter.y };
-      Some((sq, self.board[sq]))
-    }
-  }
-
-  fn size_hint(&self) -> (usize, Option<usize>) {
-    (64, Some(64))
-  }
-}
-
 impl Board {
-  // pub fn at(&self, sq: Sq) -> Option<Piece> {
-    // self[sq]
-  // }
-// 
-  // pub fn piece_at(&self, sq: Sq) -> Piece {
-    // self.at(sq).unwrap()
-  // }
-// 
-  // pub fn set_at(&mut self, sq: Sq, piece: Piece) {
-    // self[sq] = Some(piece);
-  // }
-// 
-  // pub fn clear(&mut self, sq: Sq) {
-    // self[sq] = None;
-  // }
-// 
   pub fn new() -> Board {
     Default::default()
   }
 
-  pub fn iter(&self) -> Iter {
-    Iter { counter: Sq { x: -1, y: 0 }, board: self }
+  pub fn iter(&self) -> board_iter::Iter {
+    board_iter::Iter { counter: Sq { x: -1, y: 0 }, board: self }
+  }
+
+  pub fn pieces_of(&self, color: Color) -> board_iter::PieceIter {
+    board_iter::PieceIter { counter: Sq { x: -1, y: 0 }, board: self, color }
+  }
+
+  pub fn moves_of(&self, color: Color) -> impl Iterator<Item = Sq> + '_ {
+    self.pieces_of(color).flat_map(|(sq, p)| p.moves(sq, self))
+  }
+
+  pub fn is_threatened(&self, sq: Sq, by: Color) -> bool {
+    self.moves_of(by).any(|threat| threat == sq)
   }
 
   pub fn from_file(file: &'static str) -> Board {
@@ -121,14 +88,8 @@ impl Board {
     }
     result
   }
-
-  pub fn pieces_of(&self, color: Color) -> PieceList {
-    self.iter().filter_map(|(sq, content)| match content {
-      Some(p) if p.color == color => Some((sq, p)),
-      _ => None
-    }).collect()
-  }
 }
+
 
 lazy_static! {
   pub static ref INITIAL_BOARD: Board = Board::from_file("boards/initial.txt");

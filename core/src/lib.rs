@@ -2,6 +2,7 @@
 extern crate lazy_static;
 
 pub mod board;
+pub mod board_iter;
 pub mod color;
 pub mod slide;
 pub mod piece;

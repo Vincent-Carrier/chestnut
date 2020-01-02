@@ -20,7 +20,12 @@ impl Color {
     if self == White { 7 } else { 0 }
   }
 
+  pub fn en_passant_row(self) -> SqSize {
+    if self == White { 3 } else { 4 }
+  }
+
   pub fn forward(self) -> SqSize {
     if self == White { -1 } else { 1 }
   }
+
 }

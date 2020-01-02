@@ -1,3 +1,5 @@
+use crate::sq::Sq;
+use crate::piece::Piece;
 use crate::color::{Color,*};
 use crate::board::*;
 use crate::moves::*;
@@ -11,12 +13,12 @@ pub enum KingState {
 
 pub use self::KingState::*;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 struct CastlingRights {
-  white_queen_castle: bool,
-  white_king_castle: bool,
-  black_queen_castle: bool,
-  black_king_castle: bool,
+  cannot_white_queen_castle: bool,
+  cannot_white_king_castle: bool,
+  cannot_black_queen_castle: bool,
+  cannot_black_king_castle: bool,
 }
 
 pub struct State {
@@ -24,49 +26,54 @@ pub struct State {
   pub active_color: Color,
   pub king_state: KingState,
   pub last_move: Option<Move>,
-  castling_rights: CastlingRights
+  castling_rights: CastlingRights,
 }
 
 impl State {
   pub fn new() -> State {
     State {
-      board: INITIAL_BOARD.clone(),
+      board: *INITIAL_BOARD,
       active_color: White,
       king_state: Safe,
       last_move: None,
-      castling_rights: CastlingRights {
-        white_queen_castle: true,
-        white_king_castle: true,
-        black_queen_castle: true,
-        black_king_castle: true,
+      castling_rights: CastlingRights::default(),
+    }
+  }
+
+  pub fn castle_rights(&self) -> Vec<Side> {
+    let r = self.castling_rights;
+    let mut result = vec![];
+    match self.active_color {
+      White => {
+        if !r.cannot_white_queen_castle { result.push(Side::Queen) };
+        if !r.cannot_white_king_castle { result.push(Side::King) };
+      },
+      Black => {
+        if !r.cannot_black_queen_castle { result.push(Side::Queen) };
+        if !r.cannot_black_king_castle { result.push(Side::King) };
       }
     }
+    result
   }
 
-  pub fn can_castle(&self, color: Color, side: Side) -> bool {
-    let rights = &self.castling_rights;
-    match (color, side) {
-      (White, Side::Queen) => rights.white_queen_castle,
-      (Black, Side::Queen) => rights.black_queen_castle,
-      (Black, Side::King)  => rights.black_king_castle,
-      (White, Side::King)  => rights.white_king_castle,
-    }
-  }
+  // pub fn reduce(&self, mv: Move) -> State {
+  //   State {
+  //     board: mv.execute(self.board.clone()),
+  //     active_color: self.active_color.opposite(),
+  //     king_state: Safe, // TODO
+  //     last_move: Some(mv),
+  //     castling_rights: self.castling_rights,
+  //   }
+  // }
 
-  pub fn reduce(&self, mv: Move) -> State {
-    State {
-      board: mv.execute(self),
-      active_color: self.active_color.opposite(),
-      king_state: Safe, // TODO
-      last_move: Some(mv),
-      castling_rights: self.castling_rights,
-    }
-  }
-
-  pub fn all_moves(&self) -> Vec<Move> {
-    let basic_moves = self.board.pieces_of(self.active_color).iter().map(
-      |(sq, piece)| piece.moves(*sq, &self.board)
-    ).collect();
-    // TODO: Castling, EnPassant, Promotion
+  // Pseudo-legal because these might theoretically include moves
+  // that would let the king be captured
+  pub fn pseudo_legal_moves(&self) -> impl Iterator<Item = Move> + '_ {
+    self.board.pieces_of(self.active_color).flat_map(|(from, piece)| {
+      piece.moves(from, &self.board).map(|to|
+        Move::Normal { from, to, piece, capture: self.board[to] }
+      )
+    })
   }
 }
+

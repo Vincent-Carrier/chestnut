@@ -1,5 +1,4 @@
 use crate::sq::{Vec2, Sq, SqSize, four_directions};
-use crate::color::*;
 use crate::board::*;
 use crate::piece::*;
 use crate::piece::PieceKind::*;
@@ -24,7 +23,7 @@ use self::CaptureStyle::*;
 
 struct SlideIter<'a> {
   board: &'a Board,
-  piece: Piece
+  piece: Piece,
   from: Sq,
   dir: Vec2,
   capture: CaptureStyle,
@@ -40,6 +39,7 @@ impl Iterator for SlideIter<'_> {
     self.i += 1;
     let sq = self.from + (self.dir * self.i);
     if !sq.inside_board() { return None };
+
     match self.board[sq] {
       None if self.capture != Must => Some(sq),
       Some(p) if p.color == self.piece.color => { self.i = self.max; Some(sq) },
@@ -51,42 +51,41 @@ impl Iterator for SlideIter<'_> {
 
 impl Piece {
   pub fn moves(&self, from: Sq, board: &Board) -> Vec<Sq> {
-    let slide = |dir, max, capture| {
-      SlideIter { board, from, dir, piece: *self, capture, i: 0, max }
-    };
+    let slide =
+      move |dir, max, capture| SlideIter { board, from, dir, piece: self, capture, i: 0, max };
 
     if self.kind == Pawn {
-        let forward_dist = if from.y == self.color.pawn_row() { 2 } else { 1 };
-        let forward_dir = Vec2 { x: 0, y: self.color.forward() };
-        let capture_dirs = [
-          Vec2 { x: -1, y: self.color.forward() },
-          Vec2 { x: 1, y: self.color.forward() },
-        ];
+      let forward_dist = if from.y == self.color.pawn_row() { 2 } else { 1 };
+      let forward_dir = Vec2 { x: 0, y: self.color.forward() };
+      let capture_dirs =
+        [Vec2 { x: -1, y: self.color.forward() }, Vec2 { x: 1, y: self.color.forward() }];
 
-        return capture_dirs.iter().flat_map(|dir| { slide(*dir, 1, Must) }).chain(
-          slide(forward_dir, forward_dist, Cannot)
-        ).collect()
+      return capture_dirs
+        .iter()
+        .flat_map(|dir| slide(*dir, 1, Must))
+        .chain(slide(forward_dir, forward_dist, Cannot))
+        .collect();
     }
 
     let dirs = match self.kind {
-      Knight       => *KNIGHT_DIRECTIONS,
-      Bishop       => *DIAGONALS,
-      Rook         => *STRAIGHT_LINES,
+      Knight => *KNIGHT_DIRECTIONS,
+      Bishop => *DIAGONALS,
+      Rook => *STRAIGHT_LINES,
       King | Queen => *EIGHT_DIRECTIONS,
     };
 
-    dirs.iter().flat_map(
-      |dir| {
-          let max = match self.kind {
-            Knight | King => 1,
-            _ => 8
-          };
-          slide(*dir, max, Can)
-        }
-    ).collect()
+    dirs
+      .iter()
+      .flat_map(|dir| {
+        let max = match self.kind {
+          Knight | King => 1,
+          _ => 8,
+        };
+        slide(*dir, max, Can)
+      })
+      .collect()
   }
 }
-
 
 pub fn display_moves(moves: &[Vec2]) {
   for y in 0..8 {
