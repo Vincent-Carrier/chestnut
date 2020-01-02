@@ -54,18 +54,20 @@ impl State {
   pub fn execute(&mut self, mv: Move) {
     mv.execute(&mut self.board, self.active_color);
     self.active_color = self.active_color.opposite();
-    self.king_state = Safe; // TOD;
+    self.king_state = Safe; // TODO;
     self.last_move = Some(mv);
-    self.castling_rights = self.castling_rights;
+    self.castling_rights = self.castling_rights; // TODO
   }
 
   // "Pseudo"-legal because these might theoretically include moves
   // that would let the king be captured
   pub fn pseudo_legal_moves(&self) -> impl Iterator<Item = Move> + '_ {
-    self
-      .board
-      .moves_of(self.active_color)
-      .chain(self.castle_rights().iter().map(move |&side| Move::Castle { side }))
+    self.board.moves_of(self.active_color)
+      .chain(self.castle_moves(self.active_color))
       .chain(self.en_passant().iter())
+  }
+
+  pub fn legal_moves(&self) -> impl Iterator<Item = Move> + '_ {
+    self.pseudo_legal_moves().filter(|mv| !mv.self_check(self))
   }
 }

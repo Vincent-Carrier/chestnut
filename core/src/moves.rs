@@ -39,21 +39,12 @@ pub use self::Move::*;
 impl Move {
   // This is only for user moves.For computer-generated moves,
   // king safety will be accounted for by the eval function
-  pub fn valid(self, s: &State) -> bool {
-    let special_rules = match self {
-      Castle { side } => {
-        true // TODO
-      },
-      EnPassant { from, to, capture } => {
-        true
-      },
-      _ => true,
-    };
+  pub fn self_check(self, s: &State) -> bool {
     self.execute(&mut s.board, s.active_color);
     let king_sq = s.board.pieces_of(s.active_color).find(|(sq, p)| p.kind == King).unwrap().0;
     let is_check = s.board.is_threatened(king_sq, s.active_color.opposite());
     self.undo(&mut s.board, s.active_color);
-    is_check && special_rules
+    is_check
   }
 
   pub fn execute(self, board: &mut Board, color: Color) {
