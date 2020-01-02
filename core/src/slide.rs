@@ -50,9 +50,9 @@ impl Iterator for SlideIter<'_> {
 }
 
 impl Piece {
-  pub fn moves(&self, from: Sq, board: &Board) -> Vec<Sq> {
+  pub fn moves(self, from: Sq, board: &Board) -> Vec<Sq> {
     let slide =
-      move |dir, max, capture| SlideIter { board, from, dir, piece: self, capture, i: 0, max };
+      |dir, max, capture| SlideIter { board, from, dir, piece: self, capture, i: 0, max };
 
     if self.kind == Pawn {
       let forward_dist = if from.y == self.color.pawn_row() { 2 } else { 1 };
@@ -68,10 +68,10 @@ impl Piece {
     }
 
     let dirs = match self.kind {
-      Knight => *KNIGHT_DIRECTIONS,
-      Bishop => *DIAGONALS,
-      Rook => *STRAIGHT_LINES,
-      King | Queen => *EIGHT_DIRECTIONS,
+      Knight => &*KNIGHT_DIRECTIONS,
+      Bishop => &*DIAGONALS,
+      Rook => &*STRAIGHT_LINES,
+      _  => &*EIGHT_DIRECTIONS,
     };
 
     dirs

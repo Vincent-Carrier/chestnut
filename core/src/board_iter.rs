@@ -12,7 +12,7 @@ impl Iterator for Iter<'_> {
   type Item = (Sq, Option<Piece>);
 
   fn next(&mut self) -> Option<Self::Item> {
-    let counter = self.counter;
+    let mut counter = self.counter;
     if counter.x == 7 {
       counter.y += 1;
     } else {
@@ -39,7 +39,7 @@ impl Iterator for PieceIter<'_> {
   type Item = (Sq, Piece);
 
   fn next(&mut self) -> Option<Self::Item> {
-    let counter = self.counter;
+    let mut counter = self.counter;
     if counter.x == 7 {
       counter.y += 1;
     } else {

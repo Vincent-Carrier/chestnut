@@ -1,6 +1,5 @@
-use crate::piece::PieceKind::Pawn;
 use crate::color::Color;
-use crate::piece::PieceKind::King;
+use crate::piece::PieceKind::{Pawn, Queen, King};
 use crate::piece::Piece;
 use crate::sq::*;
 use crate::board::*;
@@ -11,17 +10,17 @@ pub enum Side { Queen, King }
 
 impl Side {
   fn king_destination_sq(self, color: Color) -> Sq {
-    let x = if let _ = Side::Queen { 2 } else { 6 };
+    let x = if let Side::Queen = self { 2 } else { 6 };
     Sq { x, y: color.home_row() }
   }
 
   fn rook_destination_sq(self, color: Color) -> Sq {
-    let x = if let _ = Side::Queen { 3 } else { 5 };
+    let x = if let Side::Queen = self { 3 } else { 5 };
     Sq { x, y: color.home_row() }
   }
 
   fn original_rook_sq(self, color: Color) -> Sq {
-    let x = if let _ = Side::Queen { 0 } else { 7 };
+    let x = if let Side::Queen = self { 0 } else { 7 };
     Sq { x, y: color.home_row() }
   }
 }
@@ -39,7 +38,7 @@ pub use self::Move::*;
 
 impl Move {
   // This is only for user moves.For computer-generated moves,
-  // king safety will be accounted for by eval function
+  // king safety will be accounted for by the eval function
   pub fn valid(self, s: &State) -> bool {
     let special_rules = match self {
       Castle { side } => {
@@ -60,7 +59,11 @@ impl Move {
   pub fn execute(self, board: &mut Board, color: Color) {
     match self {
       Normal { piece, from, to, .. } => {
-        board[to] = Some(piece);
+        if piece.kind == Pawn && to.y == color.opposite().home_row() {
+          board[to] = Some(Piece { kind: Queen, color });
+        } else {
+          board[to] = Some(piece);
+        }
         board[from] = None;
       },
       EnPassant { from, to, capture } => {

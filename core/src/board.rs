@@ -55,8 +55,10 @@ impl Board {
     board_iter::PieceIter { counter: Sq { x: -1, y: 0 }, board: self, color }
   }
 
-  pub fn moves_of(&self, color: Color) -> impl Iterator<Item = Sq> + '_ {
-    self.pieces_of(color).flat_map(|(sq, p)| p.moves(sq, self))
+  pub fn moves_of(&self, color: Color) -> impl Iterator<Item = Move> + '_ {
+    self.pieces_of(color).flat_map(move |(from, piece)| piece.moves(sq, self).map(
+      move |to| Move::Normal { from, to, piece, capture: self[to] }
+    ))
   }
 
   pub fn is_threatened(&self, sq: Sq, by: Color) -> bool {
