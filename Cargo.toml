@@ -11,4 +11,3 @@ edition = "2018"
 [dependencies]
 base = { path="base" }
 engine = { path="engine" }
-vampirc-uci = "0.8.3"

@@ -1,5 +1,3 @@
-#[macro_use] extern crate lazy_static;
-
 mod user_move;
 mod player;
 mod ui;

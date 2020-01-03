@@ -3,8 +3,6 @@ use std::io::stdin;
 use base::state::State;
 use base::sq::Sq;
 use base::moves::*;
-use regex::Regex;
-
 
 pub trait UI {
   fn prompt_move(&self, s: &State) -> Option<Move>;
@@ -29,15 +27,9 @@ impl UI for CLI {
     println!("Please enter your move: ");
     let mut move_str = String::new();
     stdin().read_line(&mut move_str).unwrap();
-    let mv = parse_move(&move_str, s).unwrap();
-    Some(mv)
+    // let mv = parse_move(&move_str, s).unwrap();
+    // Some(mv)
   }
-}
-
-// TODO: Get rid of regex library
-static SQ: &str    = r"([a-h][1-8])";
-lazy_static! {
-  static ref PAWN_VERBOSE: Regex = Regex::new(&format!("{}-{}", SQ, SQ)).unwrap();
 }
 
 fn parse_sq(input: &str) -> Sq {
@@ -48,17 +40,17 @@ fn parse_sq(input: &str) -> Sq {
   }
 }
 
-fn parse_move(input: &str, s: &State) -> Result<Move, &'static str> {
-  if PAWN_VERBOSE.is_match(&input) {
-    let mv = UserMove {
-      from: parse_sq(&input[..2]),
-      to: parse_sq(&input[3..]),
-    };
-    Ok(mv)
-  } else {
-    Err("unable to parse move")
-  }
-}
+// fn parse_move(input: &str, s: &State) -> Result<Move, &'static str> {
+//   if PAWN_VERBOSE.is_match(&input) {
+//     let mv = UserMove {
+//       from: parse_sq(&input[..2]),
+//       to: parse_sq(&input[3..]),
+//     };
+//     Ok(mv)
+//   } else {
+//     Err("unable to parse move")
+//   }
+// }
 
 #[cfg(test)]
 mod test {

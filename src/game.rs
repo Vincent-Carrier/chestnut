@@ -1,10 +1,12 @@
-use base::color::Color;
+use crate::player::Player::Computer;
+use crate::player::Player::Human;
+use std::collections::HashMap;
 use crate::player::Player;
-use crate::player::PlayerKind::Human;
 use crate::ui::CLI;
-use base::color::Color::*;
+use engine::random_engine::RandomEngine;
 use base::state::KingState::Checkmate;
-use base::state::State;
+use base::prelude::*;
+use base::prelude::Color::{White, Black};
 
 pub struct Game {
   state: State,
@@ -13,29 +15,28 @@ pub struct Game {
 
 impl Game {
   pub fn new() -> Game {
-    Game {
-      state: State::new(),
-      players: hashmap![
-        White => Human { ui: CLI::new() },
-        Black => Computer { engine: RandomEngine::new() }
-      ]
-    }
+    let mut players = HashMap::new();
+    let engine = RandomEngine::new();
+    players.insert(White, Human { ui: CLI::new() });
+    players.insert(Black, Computer { engine: Box::from(engine) });
+    Game { state: State::new(), players }
   }
 
   pub fn start(&mut self) {
     while self.state.king_state != Checkmate {
-      let player = self.players[self.state.active_color];
-      let mv = match &player.kind {
-        Human(cli) => {
-          cli.prompt_turn(&self.state);
+      let player = self.players[&self.state.active_color];
+      let mv = match player {
+        Human { ui } => {
+          ui.prompt_turn(&self.state);
           loop {
-            if let Some(m) = cli.prompt_move(&self.state) { break m } else { continue }
+            if let Some(m) = ui.prompt_move(&self.state) { break m } else { continue }
           }
         },
-        _ => panic!("Not implemented")
+        Computer { engine } => {
+          engine.best_move(&self.state)
+        }
       };
-      let new_state = self.state.reduce(mv);
-      self.state = new_state;
+      self.state.execute(mv);
     }
   }
 }

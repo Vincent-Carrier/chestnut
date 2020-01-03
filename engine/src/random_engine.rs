@@ -1,10 +1,11 @@
-use rand::prelude::ThreadRng;
-use base::state::State;
+use crate::engines::Engine;
 use base::moves::Move;
-use crate::engine::Engine;
+use base::state::State;
+use rand::prelude::ThreadRng;
 use rand::seq::IteratorRandom;
 
 
+#[derive(Default)]
 pub struct RandomEngine {
   rng: ThreadRng
 }
@@ -16,7 +17,7 @@ impl RandomEngine {
 }
 
 impl Engine for RandomEngine {
-  fn best_move(&self, state: &State) -> Move {
+  fn best_move(&mut self, state: &State) -> Move {
     state.pseudo_legal_moves().choose(&mut self.rng).unwrap()
   }
 }
