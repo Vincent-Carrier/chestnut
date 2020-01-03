@@ -1,5 +1,5 @@
 use crate::ui::UI;
-use engine::engine::Engine;
+use engine::engines::Engine;
 
 pub enum Player {
   Human { ui: Box<dyn UI> },

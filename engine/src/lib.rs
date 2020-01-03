@@ -1,5 +1,5 @@
 extern crate rand;
 
-pub mod engine;
+pub mod engines;
 pub mod random_engine;
 pub mod uci;

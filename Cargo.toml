@@ -11,6 +11,4 @@ edition = "2018"
 [dependencies]
 core = { path="core" }
 engine = { path="engine" }
-regex = "1"
-lazy_static = "1.4.0"
-maplit = "1.0.2"
+vampirc-uci = "0.8.3"

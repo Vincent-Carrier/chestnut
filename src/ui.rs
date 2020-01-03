@@ -34,16 +34,10 @@ impl UI for CLI {
   }
 }
 
+// TODO: Get rid of regex library
 static SQ: &str    = r"([a-h][1-8])";
-static PIECE: &str = r"([BNRQK])";
 lazy_static! {
-  static ref PAWN: Regex = Regex::new(SQ).unwrap();
   static ref PAWN_VERBOSE: Regex = Regex::new(&format!("{}-{}", SQ, SQ)).unwrap();
-  static ref PAWN_CAPTURE: Regex = Regex::new(&format!("^{}x{}$", SQ, SQ)).unwrap();
-  static ref NORMAL: Regex = Regex::new(&format!("^{}-{}$", PIECE, SQ)).unwrap();
-  static ref NORMAL_VERBOSE: Regex = Regex::new(&format!("^{}{}-{}$", PIECE, SQ, SQ)).unwrap();
-  static ref CAPTURE: Regex = Regex::new(&format!("^{}x{}$", PIECE, SQ)).unwrap();
-  static ref CAPTURE_VERBOSE: Regex = Regex::new(&format!("^{}{}x{}$", PIECE, SQ, SQ)).unwrap();
 }
 
 fn parse_sq(input: &str) -> Sq {
@@ -55,22 +49,15 @@ fn parse_sq(input: &str) -> Sq {
 }
 
 fn parse_move(input: &str, s: &State) -> Result<Move, &'static str> {
-  let mv = match input {
-    "O-O" => Move::Castle { side: Side::King },
-    "O-O-O" => Move::Castle { side: Side::Queen },
-    _ => {
-      if PAWN_VERBOSE.is_match(&input) {
-        Move::Normal {
-          from: parse_sq(&input[..2]),
-          to: parse_sq(&input[3..]),
-          capture: None,
-        }
-      } else {
-        panic!("Notation not implemented")
-      }
-    }
-  };
-  Ok(mv)
+  if PAWN_VERBOSE.is_match(&input) {
+    let mv = UserMove {
+      from: parse_sq(&input[..2]),
+      to: parse_sq(&input[3..]),
+    };
+    Ok(mv)
+  } else {
+    Err("unable to parse move")
+  }
 }
 
 #[cfg(test)]

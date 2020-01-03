@@ -1,6 +1,6 @@
 #[macro_use] extern crate lazy_static;
-#[macro_use] extern crate maplit;
 
+mod user_move;
 mod player;
 mod ui;
 mod game;
