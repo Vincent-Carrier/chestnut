@@ -62,7 +62,7 @@ impl Piece {
 
       return capture_dirs
         .iter()
-        .flat_map(|dir| slide(*dir, 1, Must))
+        .flat_map(|&dir| slide(dir, 1, Must))
         .chain(slide(forward_dir, forward_dist, Cannot))
         .collect();
     }
@@ -76,26 +76,14 @@ impl Piece {
 
     dirs
       .iter()
-      .flat_map(|dir| {
+      .flat_map(|&dir| {
         let max = match self.kind {
           Knight | King => 1,
           _ => 8,
         };
-        slide(*dir, max, Can)
+        slide(dir, max, Can)
       })
       .collect()
   }
 }
 
-pub fn display_moves(moves: &[Vec2]) {
-  for y in 0..8 {
-    for x in 0..8 {
-      if moves.contains(&Sq { x: x as SqSize, y: y as SqSize }) {
-        print!("X");
-      } else {
-        print!(".")
-      }
-    }
-    println!();
-  }
-}

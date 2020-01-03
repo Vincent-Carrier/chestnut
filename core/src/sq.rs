@@ -23,10 +23,6 @@ impl std::ops::Mul<SqSize> for Vec2 {
 }
 
 impl Vec2 {
-  fn scale(self, n: SqSize) -> Vec2 {
-    Vec2 { x: self.x * n, y: self.y * n }
-  }
-
   const fn rotate(self) -> Vec2 {
     Vec2 { x: -self.y, y: self.x }
   }
@@ -37,7 +33,7 @@ impl Vec2 {
   }
 }
 
-struct RotationIter {
+pub struct RotationIter {
   dir: Vec2
 }
 

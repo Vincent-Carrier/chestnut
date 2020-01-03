@@ -1,10 +1,6 @@
-use crate::en_passant::*;
 use crate::board::*;
 use crate::color::{Color, *};
 use crate::moves::*;
-use crate::piece::Piece;
-use crate::piece::PieceKind::Pawn;
-use crate::sq::Sq;
 
 pub type History = Vec<Move>;
 
@@ -28,6 +24,12 @@ pub struct State {
   castling_rights: CastlingRights,
 }
 
+impl Default for State {
+  fn default() -> Self {
+    State::new()
+  }
+}
+
 impl State {
   pub fn new() -> State {
     State {
@@ -36,20 +38,19 @@ impl State {
       king_state: Safe,
       last_move: None,
       castling_rights: [
-      (Side::Queen, White, true),
-      (Side::King, White, true),
-      (Side::Queen, Black, true),
-      (Side::King, Black, true),
+        (Side::Queen, White, true),
+        (Side::King, White, true),
+        (Side::Queen, Black, true),
+        (Side::King, Black, true),
       ],
     }
   }
 
   pub fn castle_moves(&self, color: Color) -> impl Iterator<Item = Move> + '_ {
     self.castling_rights.iter().filter(
-      |(side, clr, can_castle)| *clr == color && *can_castle
+      move |(_, clr, can_castle)| *clr == color && *can_castle
       ).map(|(side, ..)| Move::Castle { side: *side })
   }
-
 
   pub fn execute(&mut self, mv: Move) {
     mv.execute(&mut self.board, self.active_color);
@@ -64,10 +65,6 @@ impl State {
   pub fn pseudo_legal_moves(&self) -> impl Iterator<Item = Move> + '_ {
     self.board.moves_of(self.active_color)
       .chain(self.castle_moves(self.active_color))
-      .chain(self.en_passant().iter())
-  }
-
-  pub fn legal_moves(&self) -> impl Iterator<Item = Move> + '_ {
-    self.pseudo_legal_moves().filter(|mv| !mv.self_check(self))
+      .chain(self.en_passant())
   }
 }

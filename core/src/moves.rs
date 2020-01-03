@@ -3,7 +3,6 @@ use crate::piece::PieceKind::{Pawn, Queen, King};
 use crate::piece::Piece;
 use crate::sq::*;
 use crate::board::*;
-use crate::state::*;
 
 #[derive(Clone, Copy)]
 pub enum Side { Queen, King }
@@ -26,7 +25,6 @@ impl Side {
 }
 
 
-
 #[derive(Clone, Copy)]
 pub enum Move {
   Normal { piece: Piece, from: Sq, to: Sq, capture: Option<Piece> },
@@ -39,11 +37,11 @@ pub use self::Move::*;
 impl Move {
   // This is only for user moves.For computer-generated moves,
   // king safety will be accounted for by the eval function
-  pub fn self_check(self, s: &State) -> bool {
-    self.execute(&mut s.board, s.active_color);
-    let king_sq = s.board.pieces_of(s.active_color).find(|(sq, p)| p.kind == King).unwrap().0;
-    let is_check = s.board.is_threatened(king_sq, s.active_color.opposite());
-    self.undo(&mut s.board, s.active_color);
+  pub fn self_check(self, board: &mut Board, color: Color) -> bool {
+    self.execute(board, color);
+    let king_sq = board.pieces_of(color).find(|(_, p)| p.kind == King).unwrap().0;
+    let is_check = board.is_threatened(king_sq, color.opposite());
+    self.undo(board, color);
     is_check
   }
 

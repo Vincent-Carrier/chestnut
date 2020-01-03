@@ -3,6 +3,7 @@ use crate::sq::*;
 use crate::color::Color::*;
 use crate::piece::{*, PieceKind::*};
 use crate::board_iter;
+use crate::moves::*;
 use std::fmt;
 use std::fs::File;
 use std::io::prelude::*;
@@ -44,7 +45,7 @@ impl std::ops::IndexMut<Sq> for Board {
 
 impl Board {
   pub fn new() -> Board {
-    Default::default()
+    Board::default()
   }
 
   pub fn iter(&self) -> board_iter::Iter {
@@ -55,14 +56,21 @@ impl Board {
     board_iter::PieceIter { counter: Sq { x: -1, y: 0 }, board: self, color }
   }
 
+  pub fn range_of(&self, color: Color) -> impl Iterator<Item = Sq> + '_ {
+    self.pieces_of(color).flat_map(move |(from, piece)| {
+      piece.moves(from, self)
+    })
+  }
+
   pub fn moves_of(&self, color: Color) -> impl Iterator<Item = Move> + '_ {
-    self.pieces_of(color).flat_map(move |(from, piece)| piece.moves(sq, self).map(
-      move |to| Move::Normal { from, to, piece, capture: self[to] }
-    ))
+    self.pieces_of(color).flat_map(move |(from, piece)| {
+      piece.moves(from, self).into_iter()
+        .map(move |to| Move::Normal { from, to, piece, capture: self[to] })
+    })
   }
 
   pub fn is_threatened(&self, sq: Sq, by: Color) -> bool {
-    self.moves_of(by).any(|threat| threat == sq)
+    self.range_of(by).any(|threat_sq| threat_sq == sq)
   }
 
   pub fn from_file(file: &'static str) -> Board {
@@ -81,7 +89,7 @@ impl Board {
             'R' => Rook,
             'Q' => Queen,
             'K' => King,
-             _  => panic!("Unexpected character")
+            _ => panic!("Unexpected character"),
           };
           let sq = Sq { x: x as SqSize, y: y as SqSize };
           result[sq] = Some(Piece { color, kind })
@@ -91,7 +99,6 @@ impl Board {
     result
   }
 }
-
 
 lazy_static! {
   pub static ref INITIAL_BOARD: Board = Board::from_file("boards/initial.txt");

@@ -4,8 +4,8 @@ use crate::board::Board;
 use crate::sq::Sq;
 
 pub struct Iter<'a> {
-  counter: Sq,
-  board: &'a Board
+  pub counter: Sq,
+  pub board: &'a Board
 }
 
 impl Iterator for Iter<'_> {
@@ -30,9 +30,9 @@ impl Iterator for Iter<'_> {
 }
 
 pub struct PieceIter<'a> {
-  counter: Sq,
-  board: &'a Board,
-  color: Color,
+  pub counter: Sq,
+  pub board: &'a Board,
+  pub color: Color,
 }
 
 impl Iterator for PieceIter<'_> {
