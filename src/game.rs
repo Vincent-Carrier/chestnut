@@ -1,31 +1,30 @@
-use crate::color::Color::*;
+use core::color::Color;
 use crate::player::Player;
 use crate::player::PlayerKind::Human;
-use crate::state::KingState::Checkmate;
-use crate::state::State;
 use crate::ui::CLI;
+use core::color::Color::*;
+use core::state::KingState::Checkmate;
+use core::state::State;
 
 pub struct Game {
   state: State,
-  white_player: Player,
-  black_player: Player,
+  players: HashMap<Color, Player>
 }
 
 impl Game {
   pub fn new() -> Game {
     Game {
       state: State::new(),
-      white_player: Player { kind: Human(CLI::new()) },
-      black_player: Player { kind: Human(CLI::new()) },
+      players: hashmap![
+        White => Human { ui: CLI::new() },
+        Black => Computer { engine: RandomEngine::new() }
+      ]
     }
   }
 
   pub fn start(&mut self) {
     while self.state.king_state != Checkmate {
-      let player = match self.state.active_color {
-        White => &self.white_player,
-        Black => &self.black_player,
-      };
+      let player = self.players[self.state.active_color];
       let mv = match &player.kind {
         Human(cli) => {
           cli.prompt_turn(&self.state);

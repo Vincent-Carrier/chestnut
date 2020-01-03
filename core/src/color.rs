@@ -1,7 +1,7 @@
 use crate::sq::SqSize;
 pub use self::Color::*;
 
-#[derive(PartialEq, Clone, Copy, Debug)]
+#[derive(PartialEq, Eq, Clone, Copy, Hash, Debug)]
 pub enum Color {
   White, Black,
 }

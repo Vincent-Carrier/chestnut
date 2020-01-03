@@ -56,8 +56,8 @@ fn parse_sq(input: &str) -> Sq {
 
 fn parse_move(input: &str, s: &State) -> Result<Move, &'static str> {
   let mv = match input {
-    "O-O" => Move::Castle { side: Side::King, piece: King { color: s.active_color } },
-    "O-O-O" => Move::Castle { side: Side::Queen, piece: King { color: s.active_color } },
+    "O-O" => Move::Castle { side: Side::King },
+    "O-O-O" => Move::Castle { side: Side::Queen },
     _ => {
       if PAWN_VERBOSE.is_match(&input) {
         Move::Normal {

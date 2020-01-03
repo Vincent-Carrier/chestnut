@@ -13,3 +13,4 @@ core = { path="core" }
 engine = { path="engine" }
 regex = "1"
 lazy_static = "1.4.0"
+maplit = "1.0.2"
