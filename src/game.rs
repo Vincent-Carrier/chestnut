@@ -1,10 +1,10 @@
-use core::color::Color;
+use base::color::Color;
 use crate::player::Player;
 use crate::player::PlayerKind::Human;
 use crate::ui::CLI;
-use core::color::Color::*;
-use core::state::KingState::Checkmate;
-use core::state::State;
+use base::color::Color::*;
+use base::state::KingState::Checkmate;
+use base::state::State;
 
 pub struct Game {
   state: State,

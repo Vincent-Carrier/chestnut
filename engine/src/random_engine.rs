@@ -1,6 +1,6 @@
 use rand::prelude::ThreadRng;
-use core::state::State;
-use core::moves::Move;
+use base::state::State;
+use base::moves::Move;
 use crate::engine::Engine;
 use rand::seq::IteratorRandom;
 

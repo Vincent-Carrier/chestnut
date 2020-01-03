@@ -1,8 +1,8 @@
-use core::sq::SqSize;
+use base::sq::SqSize;
 use std::io::stdin;
-use core::state::State;
-use core::sq::Sq;
-use core::moves::*;
+use base::state::State;
+use base::sq::Sq;
+use base::moves::*;
 use regex::Regex;
 
 

@@ -1,4 +1,4 @@
-use core::prelude::*;
+use base::prelude::*;
 
 pub struct UserMove {
   from: Sq, to: Sq

@@ -9,6 +9,6 @@ edition = "2018"
 [workspace]
 
 [dependencies]
-core = { path="core" }
+base = { path="base" }
 engine = { path="engine" }
 vampirc-uci = "0.8.3"
