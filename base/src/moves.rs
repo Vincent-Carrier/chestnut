@@ -3,9 +3,8 @@ use crate::piece::PieceKind::{Pawn, Queen, King};
 use crate::piece::Piece;
 use crate::sq::*;
 use crate::board::*;
-use strum_macros::EnumIter;
 
-#[derive(EnumIter, Clone, Copy)]
+#[derive(Clone, Copy, Hash, PartialEq, Eq)]
 pub enum Side { Queen, King }
 
 impl Side {
@@ -22,6 +21,11 @@ impl Side {
   fn original_rook_sq(self, color: Color) -> Sq {
     let x = if let Side::Queen = self { 0 } else { 7 };
     Sq { x, y: color.home_row() }
+  }
+
+  pub fn iter() -> std::slice::Iter<'static, Side> {
+    static SIDES: [Side; 2] = [Side::Queen, Side::King];
+    SIDES.iter()
   }
 }
 

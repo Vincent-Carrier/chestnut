@@ -1,3 +1,5 @@
+use crate::special_rules::CastlingRights;
+use crate::special_rules::KingState;
 use crate::board::*;
 use crate::color::{Color, *};
 use crate::moves::*;

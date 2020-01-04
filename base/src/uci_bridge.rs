@@ -66,3 +66,34 @@ impl Into<UciFen> for State {
 impl Into<State> for UciFen {
   fn into(self) -> State { unimplemented!() }
 }
+
+impl State {
+  fn fen_string(&self) -> String {
+    let iter = self.board.iter();
+    let mut string = String::with_capacity(64);
+    let mut empty_sq_count = 0;
+
+    let push_empty_count = ||
+        if empty_sq_count > 0 {
+          string.push(std::char::from_digit(empty_sq_count, 10).unwrap());
+          empty_sq_count = 0;
+        };
+
+    while let Some((sq, content)) = iter.next() {
+      if let Some(piece) = content {
+        push_empty_count();
+        string.push(piece.char());
+      } else {
+        empty_sq_count += 1;
+      }
+      if iter.counter.x == 7 {
+        string.push('/');
+        empty_sq_count = 0;
+      }
+    };
+
+    // TODO: Castling, EnPassant, half-move, full-move
+    
+    string
+  }
+}

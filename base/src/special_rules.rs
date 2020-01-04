@@ -5,6 +5,7 @@ use crate::sq::Sq;
 use crate::state::State;
 use crate::piece::PieceKind::Pawn;
 use crate::moves::Move;
+use itertools::iproduct;
 
 impl State {
   pub fn en_passant(&self) -> Vec<Move> {
@@ -54,10 +55,18 @@ pub struct CastlingRights {
   map: HashMap<(Side, Color), bool>,
 }
 
-impl Default for CastlingRights {
-  let map = HashMap::with_capacity(4);
-  for right in Side::iter().flat_map(|side| Color::iter()) {
-    right
+impl CastlingRights {
+  pub fn iter(self) -> impl Iterator<Item = ((Side, Color), bool)> {
+    self.map.into_iter()
   }
-  CastlingRights { map }
+}
+
+impl Default for CastlingRights {
+  fn default() -> Self {
+    let mut map = HashMap::with_capacity(4);
+    for key in iproduct!(Side::iter().copied(), Color::iter().copied()) {
+      map.insert(key, true);
+    }
+    CastlingRights { map }
+  }
 }

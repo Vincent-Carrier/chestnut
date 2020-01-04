@@ -1,7 +1,6 @@
 use crate::sq::SqSize;
-use strum_macros::{Display, EnumIter};
 
-#[derive(Display, EnumIter, PartialEq, Eq, Clone, Copy, Hash, Debug)]
+#[derive(PartialEq, Eq, Clone, Copy, Hash, Debug)]
 pub enum Color {
   White,
   Black,
@@ -35,6 +34,11 @@ impl Color {
   }
 
   pub fn char(self) -> char { if self == White { 'w' } else { 'b' } }
+
+  pub fn iter() -> std::slice::Iter<'static, Color> {
+    static COLORS: [Color; 2] = [White, Black];
+    COLORS.iter()
+  }
 }
 
 impl From<char> for Color {
