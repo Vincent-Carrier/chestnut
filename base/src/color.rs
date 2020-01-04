@@ -9,6 +9,10 @@ pub enum Color {
 
 pub use self::Color::*;
 
+impl Default for Color {
+  fn default() -> Self { White }
+}
+
 impl Color {
   pub fn opposite(self) -> Color {
     if self == White { Black } else { White }

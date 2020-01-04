@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use crate::color::Color;
+use crate::moves::Side;
 use crate::sq::Sq;
 use crate::state::State;
 use crate::piece::PieceKind::Pawn;
@@ -31,4 +34,30 @@ impl State {
     }
     return vec![];
   }
+}
+
+#[derive(PartialEq)]
+pub enum KingState {
+  Safe,
+  Check,
+  Checkmate,
+  Stalemate,
+}
+
+impl Default for KingState {
+  fn default() -> Self { Safe }
+}
+
+pub use self::KingState::*;
+
+pub struct CastlingRights {
+  map: HashMap<(Side, Color), bool>,
+}
+
+impl Default for CastlingRights {
+  let map = HashMap::with_capacity(4);
+  for right in Side::iter().flat_map(|side| Color::iter()) {
+    right
+  }
+  CastlingRights { map }
 }

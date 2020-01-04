@@ -2,24 +2,6 @@ use crate::board::*;
 use crate::color::{Color, *};
 use crate::moves::*;
 
-pub type History = Vec<Move>;
-
-#[derive(PartialEq)]
-pub enum KingState {
-  Safe,
-  Check,
-  Checkmate,
-  Stalemate,
-}
-
-impl Default for KingState {
-  fn default() -> Self { Safe }
-}
-
-pub use self::KingState::*;
-
-pub type CastlingRights = [(Side, Color, bool); 4];
-
 #[derive(Default)]
 pub struct State {
   pub board: Board,
@@ -32,20 +14,7 @@ pub struct State {
 }
 
 impl State {
-  pub fn new() -> State {
-    State {
-      board: INITIAL_BOARD.clone(),
-      active_color: White,
-      king_state: Safe,
-      last_move: None,
-      castling_rights: [
-        (Side::Queen, White, true),
-        (Side::King, White, true),
-        (Side::Queen, Black, true),
-        (Side::King, Black, true),
-      ],
-    }
-  }
+  pub fn new() -> State { State::default() }
 
   pub fn castle_moves(&self, color: Color) -> impl Iterator<Item = Move> + '_ {
     self.castling_rights.iter().filter(

@@ -8,7 +8,7 @@ use std::fs::File;
 use std::io::prelude::*;
 
 
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct Board {
   pieces: [[Option<Piece>; 8]; 8],
 }
@@ -42,10 +42,12 @@ impl std::ops::IndexMut<Sq> for Board {
   }
 }
 
+impl Default for Board {
+  fn default() -> Self { INITIAL_BOARD.clone() }
+}
+
 impl Board {
-  pub fn new() -> Board {
-    Board::default()
-  }
+  pub fn new() -> Board { Board::default() }
 
   pub fn iter(&self) -> board_iter::Iter {
     board_iter::Iter { counter: Sq { x: -1, y: 0 }, board: self }
@@ -57,6 +59,7 @@ impl Board {
         Some(piece) if piece.color == color => Some((sq, piece)),
         _ => None
       }
+    )
   }
 
   pub fn range_of(&self, color: Color) -> impl Iterator<Item = Sq> + '_ {
