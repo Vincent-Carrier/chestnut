@@ -67,9 +67,8 @@ impl Into<State> for UciFen {
   fn into(self) -> State { unimplemented!() }
 }
 
-impl State {
+impl Board {
   fn fen_string(&self) -> String {
-    let iter = self.board.iter();
     let mut string = String::with_capacity(64);
     let mut empty_sq_count = 0;
 
@@ -79,21 +78,27 @@ impl State {
           empty_sq_count = 0;
         };
 
-    while let Some((sq, content)) = iter.next() {
+    for (i, (sq, content)) in self.iter().enumerate() {
       if let Some(piece) = content {
         push_empty_count();
         string.push(piece.char());
       } else {
         empty_sq_count += 1;
       }
-      if iter.counter.x == 7 {
+      if i % 7 == 0 {
         string.push('/');
         empty_sq_count = 0;
       }
     };
 
-    // TODO: Castling, EnPassant, half-move, full-move
-    
+    string
+  }
+}
+
+impl State {
+  pub fn fen_string(&self) -> String {
+    let mut string = self.board.fen_string();
+    // TODO
     string
   }
 }

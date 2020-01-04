@@ -3,36 +3,14 @@ use crate::color::Color;
 use crate::piece::Piece;
 use crate::board::Board;
 use crate::sq::Sq;
-
-pub struct Iter<'a> {
-  pub counter: Sq,
-  board: &'a Board
-}
-
-impl Iterator for Iter<'_> {
-  type Item = (Sq, Option<Piece>);
-
-  fn next(&mut self) -> Option<Self::Item> {
-    let mut counter = self.counter;
-    if counter.x == 7 {
-      counter.y += 1;
-    } else {
-      counter.x += 1;
-    }
-    if counter.y > 7 { None } else {
-      let sq = Sq { x: counter.x, y: counter.y };
-      Some((sq, self.board[sq]))
-    }
-  }
-
-  fn size_hint(&self) -> (usize, Option<usize>) {
-    (64, Some(64))
-  }
-}
+use itertools::iproduct;
 
 impl Board {
-  pub fn iter(&self) -> Iter {
-    Iter { counter: Sq { x: -1, y: 0 }, board: self }
+  pub fn iter(&self) -> impl Iterator<Item = (Sq, Option<Piece>)> + '_ {
+    iproduct!(0..8, 0..8).map(|(x, y)| {
+      let sq = Sq { x, y };
+      (sq, self[sq])
+    })
   }
 
   pub fn pieces_of(&self, color: Color) -> impl Iterator<Item = (Sq, Piece)> + '_ {
