@@ -3,8 +3,9 @@ use crate::piece::PieceKind::{Pawn, Queen, King};
 use crate::piece::Piece;
 use crate::sq::*;
 use crate::board::*;
+use strum_macros::EnumIter;
 
-#[derive(Clone, Copy)]
+#[derive(EnumIter, Clone, Copy)]
 pub enum Side { Queen, King }
 
 impl Side {

@@ -1,11 +1,13 @@
 use crate::sq::SqSize;
-pub use self::Color::*;
+use strum_macros::{Display, EnumIter};
 
-#[derive(PartialEq, Eq, Clone, Copy, Hash, Debug)]
+#[derive(Display, EnumIter, PartialEq, Eq, Clone, Copy, Hash, Debug)]
 pub enum Color {
-  White, Black,
+  White,
+  Black,
 }
 
+pub use self::Color::*;
 
 impl Color {
   pub fn opposite(self) -> Color {
@@ -28,4 +30,11 @@ impl Color {
     if self == White { -1 } else { 1 }
   }
 
+  pub fn char(self) -> char { if self == White { 'w' } else { 'b' } }
+}
+
+impl From<char> for Color {
+  fn from(ch: char) -> Color {
+    if ch.is_ascii_uppercase() { White } else { Black }
+  }
 }

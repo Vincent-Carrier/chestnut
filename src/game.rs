@@ -7,6 +7,7 @@ use engine::random_engine::RandomEngine;
 use base::state::KingState::Checkmate;
 use base::prelude::*;
 use base::prelude::Color::{White, Black};
+use vampirc_uci::{Serializable, UciMessage};
 
 pub struct Game {
   state: State,
@@ -25,18 +26,30 @@ impl Game {
   pub fn start(&mut self) {
     while self.state.king_state != Checkmate {
       let player = self.players[&self.state.active_color];
-      let mv = match player {
+      let playing_against = self.players[&self.state.active_color.opposite()];
+      let uci_mv = match player {
         Human { ui } => {
           ui.prompt_turn(&self.state);
           loop {
-            if let Some(m) = ui.prompt_move(&self.state) { break m } else { continue }
+            if let Ok(uci_mv) = ui.prompt_move(&self.state) { break uci_mv }
           }
         },
         Computer { engine } => {
-          engine.best_move(&self.state)
+          let mv = engine.best_move(&self.state);
+          let uci_mv: UciMove = move.into();
+          let msg = UciMessage::best_move(uci_mv);
+          println!("{}", msg.serialize());
+          uci_mv
         }
       };
-      self.state.execute(mv);
+      if let Player::Computer { .. } = playing_against {
+        let position_msg = {
+          let fen: UciFen = self.state.fen_string().into();
+          UciMessage::Position { startpos: false, fen, moves: vec![uci_mv] }
+        };
+        println!("{}", position_msg);
+      };
+      self.state.execute(uci_mv.into());
     }
   }
 }

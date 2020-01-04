@@ -8,5 +8,6 @@ edition = "2018"
 
 [dependencies]
 lazy_static = "1.4.0"
+strum = "0.17.1"
+strum_macros = "0.17.1"
 vampirc-uci = "0.8.3"
-

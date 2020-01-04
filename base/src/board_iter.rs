@@ -1,11 +1,11 @@
-use crate::color::Color;
+use crate::state::State;
 use crate::piece::Piece;
 use crate::board::Board;
 use crate::sq::Sq;
 
 pub struct Iter<'a> {
-  pub counter: Sq,
-  pub board: &'a Board
+  counter: Sq,
+  board: &'a Board
 }
 
 impl Iterator for Iter<'_> {
@@ -29,34 +29,33 @@ impl Iterator for Iter<'_> {
   }
 }
 
-pub struct PieceIter<'a> {
-  pub counter: Sq,
-  pub board: &'a Board,
-  pub color: Color,
-}
+impl State {
+  pub fn fen_string(&self) -> String {
+    let iter = self.board.iter();
+    let mut string = String::with_capacity(64);
+    let mut empty_sq_count = 0;
 
-impl Iterator for PieceIter<'_> {
-  type Item = (Sq, Piece);
+    let push_empty_count = ||
+        if empty_sq_count > 0 {
+          string.push(std::char::from_digit(empty_sq_count, 10).unwrap());
+          empty_sq_count = 0;
+        };
 
-  fn next(&mut self) -> Option<Self::Item> {
-    let mut counter = self.counter;
-    if counter.x == 7 {
-      counter.y += 1;
-    } else {
-      counter.x += 1;
-    }
-    if counter.y > 7 { None } else {
-      let sq = Sq { x: counter.x, y: counter.y };
-      if let Some(p) = self.board[sq] {
-        if p.color == self.color {
-          Some((sq, p))
-        } else { None }
-      } else { None }
-    }
+    while let Some((sq, content)) = iter.next() {
+      if let Some(piece) = content {
+        push_empty_count();
+        string.push(piece.char());
+      } else {
+        empty_sq_count += 1;
+      }
+      if iter.counter.x == 7 {
+        string.push('/');
+        empty_sq_count = 0;
+      }
+    };
+
+    // TODO: Castling, EnPassant, half-move, full-move
+    
+    string
   }
-
-  fn size_hint(&self) -> (usize, Option<usize>) {
-    (1, Some(16))
-  }
 }
-

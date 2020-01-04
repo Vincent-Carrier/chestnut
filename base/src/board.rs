@@ -1,7 +1,6 @@
-use crate::color::Color;
 use crate::sq::*;
-use crate::color::Color::*;
-use crate::piece::{*, PieceKind::*};
+use crate::color::Color;
+use crate::piece::*;
 use crate::board_iter;
 use crate::moves::*;
 use std::fmt;
@@ -52,8 +51,12 @@ impl Board {
     board_iter::Iter { counter: Sq { x: -1, y: 0 }, board: self }
   }
 
-  pub fn pieces_of(&self, color: Color) -> board_iter::PieceIter {
-    board_iter::PieceIter { counter: Sq { x: -1, y: 0 }, board: self, color }
+  pub fn pieces_of(&self, color: Color) -> impl Iterator<Item = (Sq, Piece)> + '_ {
+    self.iter().filter_map(
+      |(sq, content)| match content {
+        Some(piece) if piece.color == color => Some((sq, piece)),
+        _ => None
+      }
   }
 
   pub fn range_of(&self, color: Color) -> impl Iterator<Item = Sq> + '_ {
@@ -81,18 +84,8 @@ impl Board {
     for (y, line) in contents.lines().enumerate() {
       for (x, ch) in line.chars().enumerate() {
         if ch != '.' {
-          let color = if ch.is_ascii_uppercase() { White } else { Black };
-          let kind = match ch.to_ascii_uppercase() {
-            'P' => Pawn,
-            'N' => Knight,
-            'B' => Bishop,
-            'R' => Rook,
-            'Q' => Queen,
-            'K' => King,
-            _ => panic!("Unexpected character"),
-          };
           let sq = Sq { x: x as SqSize, y: y as SqSize };
-          result[sq] = Some(Piece { color, kind })
+          result[sq] = Some(ch.into())
         }
       }
     }

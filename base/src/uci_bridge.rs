@@ -58,3 +58,11 @@ impl Into<PieceKind> for UciPiece {
     }
   }
 }
+
+impl Into<UciFen> for State {
+  fn into(self) -> UciFen { unimplemented!() }
+}
+
+impl Into<State> for UciFen {
+  fn into(self) -> State { unimplemented!() }
+}

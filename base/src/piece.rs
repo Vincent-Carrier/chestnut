@@ -32,6 +32,26 @@ impl PieceKind {
   }
 }
 
+impl From<char> for PieceKind {
+  fn from(ch: char) -> PieceKind {
+    match ch.to_ascii_uppercase() {
+      'P' => Pawn,
+      'N' => Knight,
+      'B' => Bishop,
+      'R' => Rook,
+      'Q' => Queen,
+      'K' => King,
+      _ => panic!("Unexpected character"),
+    }
+  }
+}
+
+impl From<char> for Piece {
+  fn from(ch: char) -> Piece {
+    Piece { kind: ch.into(), color: ch.into() }
+  }
+}
+
 #[derive(Clone, Copy, PartialEq)]
 pub struct Piece {
   pub kind: PieceKind,
@@ -51,4 +71,6 @@ impl Piece {
       std::char::from_u32(code_pt).unwrap()
     }
   }
+
+
 }

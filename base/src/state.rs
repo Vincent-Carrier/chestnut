@@ -12,22 +12,23 @@ pub enum KingState {
   Stalemate,
 }
 
+impl Default for KingState {
+  fn default() -> Self { Safe }
+}
+
 pub use self::KingState::*;
 
 pub type CastlingRights = [(Side, Color, bool); 4];
 
+#[derive(Default)]
 pub struct State {
   pub board: Board,
   pub active_color: Color,
   pub king_state: KingState,
   pub last_move: Option<Move>,
-  castling_rights: CastlingRights,
-}
-
-impl Default for State {
-  fn default() -> Self {
-    State::new()
-  }
+  pub castling_rights: CastlingRights,
+  pub halfmove: u32,
+  pub fullmove: u32,
 }
 
 impl State {

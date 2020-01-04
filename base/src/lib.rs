@@ -1,5 +1,8 @@
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate strum_macros;
+extern crate strum;
 
 pub mod board;
 pub mod board_iter;
