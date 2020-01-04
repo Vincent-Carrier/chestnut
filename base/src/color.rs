@@ -1,6 +1,6 @@
 use crate::sq::SqSize;
 
-#[derive(PartialEq, Eq, Clone, Copy, Hash, Debug)]
+#[derive(PartialEq, PartialOrd, Ord, Eq, Clone, Copy, Hash, Debug)]
 pub enum Color {
   White,
   Black,

@@ -4,8 +4,8 @@ use crate::piece::Piece;
 use crate::sq::*;
 use crate::board::*;
 
-#[derive(Clone, Copy, Hash, PartialEq, Eq)]
-pub enum Side { Queen, King }
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, PartialEq, Eq)]
+pub enum Side { King, Queen }
 
 impl Side {
   fn king_destination_sq(self, color: Color) -> Sq {
@@ -30,7 +30,7 @@ impl Side {
 }
 
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Move {
   Normal { piece: Piece, from: Sq, to: Sq, capture: Option<Piece> },
   Castle { side: Side },

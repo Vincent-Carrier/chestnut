@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use crate::color::Color;
 use crate::moves::Side;
 use crate::sq::Sq;
@@ -37,6 +37,8 @@ impl State {
   }
 }
 
+
+
 #[derive(PartialEq)]
 pub enum KingState {
   Safe,
@@ -51,20 +53,22 @@ impl Default for KingState {
 
 pub use self::KingState::*;
 
+
+
 pub struct CastlingRights {
-  map: HashMap<(Side, Color), bool>,
+  map: BTreeMap<(Color, Side), bool>,
 }
 
 impl CastlingRights {
-  pub fn iter(self) -> impl Iterator<Item = ((Side, Color), bool)> {
-    self.map.into_iter()
+  pub fn iter(&self) -> impl Iterator<Item = (&(Color, Side), &bool)> {
+    self.map.iter()
   }
 }
 
 impl Default for CastlingRights {
   fn default() -> Self {
-    let mut map = HashMap::with_capacity(4);
-    for key in iproduct!(Side::iter().copied(), Color::iter().copied()) {
+    let mut map = BTreeMap::new();
+    for key in iproduct!(Color::iter().copied(), Side::iter().copied()) {
       map.insert(key, true);
     }
     CastlingRights { map }

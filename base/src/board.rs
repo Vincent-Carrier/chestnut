@@ -1,8 +1,5 @@
 use crate::sq::*;
-use crate::color::Color;
 use crate::piece::*;
-use crate::board_iter;
-use crate::moves::*;
 use std::fmt;
 use std::fs::File;
 use std::io::prelude::*;
@@ -47,13 +44,15 @@ impl Default for Board {
 }
 
 impl Board {
+  pub fn empty() -> Board { Board { pieces: [[None; 8]; 8] } }
+
   pub fn new() -> Board { Board::default() }
 
   pub fn from_file(file: &'static str) -> Board {
     let mut f = File::open(file).expect("File not found");
     let mut contents = String::new();
     f.read_to_string(&mut contents).expect("Could not read file");
-    let mut result = Board::new();
+    let mut result = Board::empty();
     for (y, line) in contents.lines().enumerate() {
       for (x, ch) in line.chars().enumerate() {
         if ch != '.' {

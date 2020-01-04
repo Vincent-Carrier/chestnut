@@ -1,23 +1,17 @@
-use crate::sq::SqSize;
 use crate::piece::PieceKind;
-use vampirc_uci::*;
 use crate::prelude::*;
+use crate::sq::SqSize;
+use vampirc_uci::*;
 
 impl Into<UciSquare> for Sq {
   fn into(self) -> UciSquare {
-    UciSquare {
-      file: (self.x as u8 + 97).into(),
-      rank: 8 - self.y as u8
-    }
+    UciSquare { file: (self.x as u8 + 97).into(), rank: 8 - self.y as u8 }
   }
 }
 
 impl Into<Sq> for UciSquare {
   fn into(self) -> Sq {
-    Sq {
-      x: (97 - self.file as u8) as SqSize,
-      y: 8 + self.rank as SqSize
-    }
+    Sq { x: (97 - self.file as u8) as SqSize, y: 8 + self.rank as SqSize }
   }
 }
 
@@ -33,6 +27,7 @@ impl Into<UciMove> for Move {
   }
 }
 
+// TODO: Macro this sh*t out
 impl Into<UciPiece> for PieceKind {
   fn into(self) -> UciPiece {
     match self {
@@ -56,49 +51,5 @@ impl Into<PieceKind> for UciPiece {
       UciPiece::Queen => PieceKind::Queen,
       UciPiece::King => PieceKind::King,
     }
-  }
-}
-
-impl Into<UciFen> for State {
-  fn into(self) -> UciFen { unimplemented!() }
-}
-
-impl Into<State> for UciFen {
-  fn into(self) -> State { unimplemented!() }
-}
-
-impl Board {
-  fn fen_string(&self) -> String {
-    let mut string = String::with_capacity(64);
-    let mut empty_sq_count = 0;
-
-    let push_empty_count = ||
-        if empty_sq_count > 0 {
-          string.push(std::char::from_digit(empty_sq_count, 10).unwrap());
-          empty_sq_count = 0;
-        };
-
-    for (i, (sq, content)) in self.iter().enumerate() {
-      if let Some(piece) = content {
-        push_empty_count();
-        string.push(piece.char());
-      } else {
-        empty_sq_count += 1;
-      }
-      if i % 7 == 0 {
-        string.push('/');
-        empty_sq_count = 0;
-      }
-    };
-
-    string
-  }
-}
-
-impl State {
-  pub fn fen_string(&self) -> String {
-    let mut string = self.board.fen_string();
-    // TODO
-    string
   }
 }

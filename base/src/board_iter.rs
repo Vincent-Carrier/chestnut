@@ -7,7 +7,7 @@ use itertools::iproduct;
 
 impl Board {
   pub fn iter(&self) -> impl Iterator<Item = (Sq, Option<Piece>)> + '_ {
-    iproduct!(0..8, 0..8).map(|(x, y)| {
+    iproduct!(0..8, 0..8).map(move |(y, x)| {
       let sq = Sq { x, y };
       (sq, self[sq])
     })
@@ -15,7 +15,7 @@ impl Board {
 
   pub fn pieces_of(&self, color: Color) -> impl Iterator<Item = (Sq, Piece)> + '_ {
     self.iter().filter_map(
-      |(sq, content)| match content {
+      move |(sq, content)| match content {
         Some(piece) if piece.color == color => Some((sq, piece)),
         _ => None
       }

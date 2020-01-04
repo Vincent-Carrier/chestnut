@@ -1,7 +1,7 @@
 use crate::color::*;
 use std::convert::TryFrom;
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum PieceKind {
   Pawn, Knight, Bishop, Rook, Queen, King
 }
@@ -52,7 +52,7 @@ impl From<char> for Piece {
   }
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub struct Piece {
   pub kind: PieceKind,
   pub color: Color
