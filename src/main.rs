@@ -1,8 +1,4 @@
-#[macro_use]
-extern crate lazy_static;
-
 extern crate vampirc_uci;
-extern crate regex;
 
 mod user_move;
 mod player;

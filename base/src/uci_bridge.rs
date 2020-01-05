@@ -73,7 +73,6 @@ impl Into<PieceKind> for UciPiece {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use crate::prelude::*;
   use vampirc_uci::UciSquare;
 
   #[test]

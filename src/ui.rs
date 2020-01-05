@@ -1,14 +1,8 @@
-use vampirc_uci::UciSquare;
-use vampirc_uci::UciMove;
-use base::sq::SqSize;
+use base::uci_bridge::parse_move;
 use std::io::stdin;
-use base::state::State;
-use base::sq::Sq;
-use base::moves::*;
-use vampirc_uci::parse_strict;
-use regex::Regex;
+use base::prelude::*;
 
-type UiResult = Result<UciMove, &'static str>;
+type UiResult = Result<Move, &'static str>;
 
 pub trait UI {
   fn prompt_move(&self, s: &State) -> UiResult;
@@ -33,8 +27,8 @@ impl UI for CLI {
     println!("Please enter your move: ");
     let mut move_str = String::new();
     stdin().read_line(&mut move_str).unwrap();
-    let mv = parse_move(move_str);
-    parse_move(move_str)
+    let mv = parse_move(move_str, &s.board);
+    Ok(mv)
   }
 }
 
