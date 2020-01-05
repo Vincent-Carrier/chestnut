@@ -1,3 +1,5 @@
+use crate::uci_bridge::parse_move;
+use crate::color::Color::White;
 use crate::board::*;
 use crate::color::Color;
 use crate::moves::*;
@@ -21,6 +23,19 @@ impl State {
     State { fullmoves: 1, ..State::default() }
   }
 
+  pub fn with(string: &str) -> State {
+    let mut state = State::new();
+    let moves: Vec<Move> = string.split_ascii_whitespace().map(
+      |move_str| {
+        let uci = parse_move(move_str.to_string(), &state.board);
+        Move::from(uci)
+      }).collect();
+    for mv in moves {
+      state.execute(mv);
+    }
+    state
+  }
+
   pub fn castle_moves(&self, color: Color) -> impl Iterator<Item = Move> + '_ {
     self
       .castling_rights
@@ -35,6 +50,7 @@ impl State {
     self.king_state = Safe; // TODO;
     self.last_move = Some(mv);
     self.castling_rights = Default::default(); // TODO
+    if self.active_color == White { self.fullmoves += 1 }
   }
 
   // "Pseudo"-legal because these might theoretically include moves

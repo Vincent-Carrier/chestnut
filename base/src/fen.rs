@@ -31,7 +31,7 @@ impl Board {
     let mut string = String::with_capacity(96);
     let mut empty_sq_count = 0;
 
-    for (i, (_, content)) in self.iter().enumerate() {
+    for (sq, content) in self.iter() {
       if let Some(piece) = content {
         if empty_sq_count > 0 {
           string.push(digit_to_char(empty_sq_count));
@@ -41,7 +41,8 @@ impl Board {
       } else {
         empty_sq_count += 1;
       }
-      if (i + 1) % 8 == 0 {
+
+      if sq.x == 7 {
         if empty_sq_count > 0 {
           string.push(digit_to_char(empty_sq_count));
         };
@@ -85,10 +86,11 @@ impl State {
       }
     };
 
-    if let Some(mv) = self.en_passant().get(0) {
-      if let Move::Normal { from, to, .. } = mv {
-        let sq: UciSquare = Sq { x: to.x, y: from.y }.into();
-        string.push_str(&format!("{}", sq));
+    if let Some(mv) = self.last_move {
+      if let Move::Normal { from, .. } = mv {
+        let y = from.y + self.active_color.opposite().forward();
+        let sq: UciSquare = Sq { x: from.x, y }.into();
+        string.push_str(&format!(" {}", sq));
       }
     } else {
       string.push_str(" -");
@@ -105,14 +107,17 @@ impl State {
 
 #[cfg(test)]
 mod tests {
-  use crate::state::State;
+  use crate::prelude::*;
 
   #[test]
   fn fen_string_initial_state() {
-    println!("expected: {}", State::new().fen_string());
     assert_eq!(
       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       State::new().fen_string()
+    );
+    assert_eq!(
+      "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2",
+      State::with("e2e4 c7c5").fen_string()
     )
   }
 }

@@ -38,28 +38,7 @@ impl UI for CLI {
   }
 }
 
-fn parse_move(s: String) -> UiResult {
-  lazy_static! {
-    static ref MOVE_REGEX: Regex = Regex::new(r"([a-h][1-8])([a-h][1-8])([nbrq])?").unwrap();
-  }
 
-  if !MOVE_REGEX.is_match(&s) { return Err("couldn't parse your move") }
-  let caps = MOVE_REGEX.captures(&s).unwrap();
-  // TODO: Promotion
-  let mv = UciMove {
-    from: sq_from_str(caps.get(1).unwrap().as_str()),
-    to: sq_from_str(caps.get(2).unwrap().as_str()),
-    promotion: None,
-  };
-  Ok(mv)
-}
 
-fn sq_from_str(s: &str) -> UciSquare {
-  let mut chars = s.chars();
-  UciSquare {
-    file: chars.next().unwrap(),
-    rank: chars.next().unwrap().to_digit(10).unwrap() as u8,
-  }
-}
 
 
