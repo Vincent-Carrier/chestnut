@@ -4,6 +4,7 @@ mod user_move;
 mod player;
 mod ui;
 mod game;
+mod uci_engine;
 
 use crate::game::Game;
 

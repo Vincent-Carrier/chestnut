@@ -6,7 +6,7 @@ pub struct UserMove {
 
 impl UserMove {
   pub fn validate(&self, s: &State) -> Result<Move, &str> {
-    let from = s.board[self.from]?;
+    let from = s.board[self.from];
     let capture = s.board[self.to];
     Err("sorry")
   }

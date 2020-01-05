@@ -1,7 +1,7 @@
 use std::io::prelude::*;
+use std::io::BufReader;
+use std::io::stdin;
 use base::prelude::Color::{White,Black};
-use crate::player::Player::Computer;
-use crate::player::Player::Human;
 use std::collections::BTreeMap;
 use crate::player::Player;
 use crate::ui::CLI;
@@ -19,8 +19,9 @@ impl Game {
   pub fn new() -> Game {
     let mut players = BTreeMap::new();
     let engine = RandomEngine::new();
-    players.insert(White, Human { ui: CLI::new() });
-    players.insert(Black, Computer { engine: Box::from(engine) });
+    let uci = Player::Uci { reader: BufReader::new(stdin()) };
+    players.insert(Black, uci);
+    players.insert(White, Player::Computer { engine: Box::from(engine) });
     Game { state: State::new(), players }
   }
 
@@ -29,23 +30,19 @@ impl Game {
       let player = self.players[&self.state.active_color];
       let playing_against = self.players[&self.state.active_color.opposite()];
       let mv = match player {
-        Human { ui } => {
+        Player::Human { ui } => {
           ui.prompt_turn(&self.state);
           loop {
             if let Ok(mv) = ui.prompt_move(&self.state) { break mv }
           }
         },
-        Computer { engine } => {
-          let mv = engine.best_move(&self.state);
-          // let mv: UciMove = mv.into();
-          // let msg = UciMessage::best_move(mv);
-          // println!("{}", msg.serialize());
-          mv
-        },
-        Uci { reader } => {
-          for line in reader.lines() {
-            let messages = vampirc_uci::parse(line) {
-              BestMove()
+        Player::Computer { engine } => engine.best_move(&self.state),
+        Player::Uci { reader } => {
+          let messages = vampirc_uci::parse(reader.read_line());
+          loop {
+            match messages.iter().next() {
+              UciMessage::BestMove { best_move, .. } => break best_move.into(),
+              _ => ()
             }
           }
         }

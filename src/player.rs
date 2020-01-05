@@ -1,9 +1,10 @@
-use std::io::BufReader;
-use crate::ui::UI;
-use engine::engines::Engine;
+use base::prelude::*;
 
-pub enum Player {
-  Human { ui: Box<dyn UI> },
-  Computer { engine: Box<dyn Engine> },
-  Uci { reader: BufReader }
+// We need to make this a trait because we dont't
+// want UCI engines for WebAssembly target
+pub trait Player {
+  fn prompt_turn(state: &State);
+  fn accept_move(mv: &Move);
+  fn post_move(state: &State) -> Move;
 }
+
