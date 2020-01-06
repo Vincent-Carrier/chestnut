@@ -66,5 +66,5 @@ impl Board {
 }
 
 lazy_static! {
-  pub static ref INITIAL_BOARD: Board = Board::from_file("boards/initial.txt");
+  pub static ref INITIAL_BOARD: Board = Board::from_file("base/boards/initial.txt");
 }

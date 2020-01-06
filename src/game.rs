@@ -1,8 +1,6 @@
-use uci::engine::UciEngine;
 use base::prelude::Color::{White,Black};
 use std::collections::BTreeMap;
 use base::player::Player;
-use crate::cli::CLI;
 use base::prelude::*;
 use base::prelude::KingState::{Safe, Check};
 
@@ -12,10 +10,8 @@ pub struct Game {
 }
 
 impl Game {
-  pub fn new() -> Game {
+  pub fn new(player1: Box<dyn Player>, player2: Box<dyn Player>) -> Game {
     let mut players = BTreeMap::new();
-    let player1: Box<dyn Player> = Box::from(CLI {});
-    let player2: Box<dyn Player> = Box::from(UciEngine {});
     players.insert(White, player1);
     players.insert(Black, player2);
     Game { state: State::new(), players }
@@ -25,10 +21,12 @@ impl Game {
     loop {
       match self.state.king_state {
         Safe | Check => {
-          let player = &self.players[&self.state.active_color];
-          let playing_against = &self.players[&self.state.active_color.opposite()];
+          let active = &self.state.active_color;
+          let player = &self.players[active];
+          let other_player = &self.players[&active.opposite()];
+          player.prompt_turn(&self.state);
           let mv = player.post_move(&self.state);
-          playing_against.accept_move(&mv, &self.state);
+          other_player.accept_move(&mv, &self.state);
           self.state.execute(mv);
         },
         _ => { panic!("Game over") }
