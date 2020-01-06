@@ -13,14 +13,14 @@ fn parse_player_type(string: &str) -> Box<dyn Player> {
     "cli" => Box::from(CLI {}),
     "engine" => Box::from(Engine::new()),
     "uci" => Box::from(UciEngine {}),
-    _ => panic!("Unexecpted player type")
+    unknown => panic!(format!("Unexecpted player type {}", unknown))
   }
 }
 
 fn main() {
-  let args: Vec<String> = std::env::args().collect();
-  let player1 = parse_player_type(&args[1]);
-  let player2 = parse_player_type(&args[2]);
+  let mut args = std::env::args().skip(1);
+  let player1 = parse_player_type(&args.next().unwrap_or("cli".to_string()));
+  let player2 = parse_player_type(&args.next().unwrap_or("engine".to_string()));
   let mut game = Game::new(player1, player2);
   game.start();
 }

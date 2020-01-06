@@ -42,8 +42,11 @@ impl Iterator for SlideIter<'_> {
 
     match self.board[sq] {
       None if self.capture != Must => Some(sq),
-      Some(p) if p.color == self.piece.color => { self.i = self.max; Some(sq) },
-      Some(p) if p.color != self.piece.color && self.capture != Cannot => Some(sq),
+      Some(p) if p.color != self.piece.color && self.capture != Cannot => {
+        self.i = std::i8::MAX;
+        Some(sq)
+      },
+      Some(p) if p.color == self.piece.color => None,
       _ => None
     }
   }
