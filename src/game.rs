@@ -1,14 +1,10 @@
-use crate::uci_engine::UciEngine;
-use std::io::prelude::*;
-use std::io::BufReader;
-use std::io::stdin;
+use uci::engine::UciEngine;
 use base::prelude::Color::{White,Black};
 use std::collections::BTreeMap;
 use base::player::Player;
-use engine::random_engine::RandomEngine;
+use crate::cli::CLI;
 use base::prelude::*;
-use base::prelude::KingState::{Checkmate};
-use vampirc_uci::{UciMessage, UciFen, Serializable};
+use base::prelude::KingState::{Safe, Check};
 
 pub struct Game {
   state: State,
@@ -18,20 +14,25 @@ pub struct Game {
 impl Game {
   pub fn new() -> Game {
     let mut players = BTreeMap::new();
-    let engine = RandomEngine::new();
-    let uci = UciEngine { reader: BufReader::new(stdin()) };
-    players.insert(White, Box::from(engine));
-    players.insert(Black, Box::from(uci));
+    let player1: Box<dyn Player> = Box::from(CLI {});
+    let player2: Box<dyn Player> = Box::from(UciEngine {});
+    players.insert(White, player1);
+    players.insert(Black, player2);
     Game { state: State::new(), players }
   }
 
   pub fn start(&mut self) {
-    while self.state.king_state != Checkmate {
-      let player = self.players[&self.state.active_color];
-      let playing_against = self.players[&self.state.active_color.opposite()];
-      let mv = player.post_move(&self.state);
-      playing_against.accept_move(mv, &self.state);
-      self.state.execute(mv);
+    loop {
+      match self.state.king_state {
+        Safe | Check => {
+          let player = &self.players[&self.state.active_color];
+          let playing_against = &self.players[&self.state.active_color.opposite()];
+          let mv = player.post_move(&self.state);
+          playing_against.accept_move(&mv, &self.state);
+          self.state.execute(mv);
+        },
+        _ => { panic!("Game over") }
+      }
     }
   }
 }

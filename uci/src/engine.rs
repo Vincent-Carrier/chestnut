@@ -1,52 +1,34 @@
+use crate::bridge::from_move;
+use crate::bridge::into_move;
+use crate::fen::uci_fen;
 use vampirc_uci::UciFen;
-use std::io::BufRead;
+use std::io::prelude::*;
 use base::prelude::*;
-use std::io::stdout;
-use std::io::stdin;
+use std::io::{stdin,BufReader};
 use base::player::Player;
-use std::io::Stdout;
-use std::io::Stdin;
-use std::io::BufWriter;
-use std::io::BufReader;
 use vampirc_uci::parse;
 use vampirc_uci::uci::UciMessage;
 
-struct UciEngine {
-  reader: BufReader<Stdin>,
-  writer: BufWriter<Stdout>,
-}
-
-impl Default for UciEngine {
-  fn default() -> Self {
-    UciEngine {
-      reader: BufReader::new(stdin()),
-      writer: BufWriter::new(stdout()),
-    }
-  }
-}
+#[derive(Default)]
+pub struct UciEngine {}
 
 impl Player for UciEngine {
-  fn game_start(&self, state: &State) {
-
-  }
-
-  fn prompt_turn(&self, state: &State) {
-  }
-
-  fn accept_move(&self, mv: &Move) {
+  fn accept_move(&self, mv: &Move, state: &State) {
     let position_msg = {
-      let fen: Option<UciFen> = Some(state.into());
-      UciMessage::Position { startpos: false, fen, moves: vec![mv.into()] }
+      let fen: Option<UciFen> = Some(uci_fen(state));
+      UciMessage::Position { startpos: false, fen, moves: vec![into_move(*mv)] }
     };
     println!("{}", position_msg);
   }
 
   fn post_move(&self, state: &State) -> Move {
-    let lines = self.reader.lines();
+    let reader = BufReader::new(stdin());
+    let mut lines = reader.lines();
     loop {
       let line = lines.next().unwrap().unwrap();
-      match parse(&line).get(0).unwrap() {
-        UciMessage::BestMove { best_move, .. } => break best_move.into(),
+      let messages = parse(&line);
+      match messages.get(0).unwrap() {
+        UciMessage::BestMove { best_move, .. } => break from_move(*best_move, &state.board),
         _ => continue
       };
     }

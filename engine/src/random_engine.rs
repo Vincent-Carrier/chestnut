@@ -1,4 +1,4 @@
-use crate::engines::Engine;
+use base::player::Player;
 use base::moves::Move;
 use base::state::State;
 use rand::prelude::ThreadRng;
@@ -6,22 +6,19 @@ use rand::seq::IteratorRandom;
 
 
 #[derive(Default)]
-pub struct RandomEngine {
+pub struct Engine {
   rng: ThreadRng
 }
 
-impl RandomEngine {
-  pub fn new() -> RandomEngine {
-    RandomEngine { rng: rand::thread_rng() }
-  }
-}
-
-impl Engine for RandomEngine {
-  fn best_move(&mut self, state: &State) -> Move {
-    state.pseudo_legal_moves().choose(&mut self.rng).unwrap()
+impl Engine {
+  pub fn new() -> Engine {
+    Engine { rng: rand::thread_rng() }
   }
 }
 
 impl Player for Engine {
-
+  fn post_move(&self, state: &State) -> Move {
+    let mut rng = self.rng;
+    state.pseudo_legal_moves().choose(&mut rng).unwrap()
+  }
 }
