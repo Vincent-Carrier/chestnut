@@ -26,10 +26,8 @@ impl State {
   pub fn with(string: &str) -> State {
     let mut state = State::new();
     let moves: Vec<Move> = string.split_ascii_whitespace().map(
-      |move_str| {
-        let uci = parse_move(move_str.to_string(), &state.board);
-        Move::from(uci)
-      }).collect();
+      |move_str| parse_move(move_str.to_string(), &state.board)
+    ).collect();
     for mv in moves {
       state.execute(mv);
     }

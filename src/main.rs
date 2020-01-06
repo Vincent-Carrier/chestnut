@@ -1,8 +1,7 @@
 extern crate vampirc_uci;
 
-mod user_move;
-mod player;
-mod ui;
+// mod user_move;
+mod cli;
 mod game;
 mod uci_engine;
 

@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate lazy_static;
 
+pub mod player;
 pub mod board;
 pub mod board_iter;
 pub mod color;

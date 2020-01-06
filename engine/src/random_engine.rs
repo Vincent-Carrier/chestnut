@@ -21,3 +21,7 @@ impl Engine for RandomEngine {
     state.pseudo_legal_moves().choose(&mut self.rng).unwrap()
   }
 }
+
+impl Player for Engine {
+
+}

@@ -43,6 +43,10 @@ impl Into<UciMove> for Move {
   }
 }
 
+pub fn from(uci_move: UciMove, board: &Board) -> Move {
+
+}
+
 // TODO: Macro this sh*t out
 impl Into<UciPiece> for PieceKind {
   fn into(self) -> UciPiece {
