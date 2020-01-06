@@ -1,4 +1,3 @@
-use crate::uci_bridge::parse_move;
 use crate::color::Color::White;
 use crate::board::*;
 use crate::color::Color;
@@ -26,7 +25,7 @@ impl State {
   pub fn with(string: &str) -> State {
     let mut state = State::new();
     let moves: Vec<Move> = string.split_ascii_whitespace().map(
-      |move_str| parse_move(move_str.to_string(), &state.board)
+      |move_str| Move::parse(move_str, &state.board)
     ).collect();
     for mv in moves {
       state.execute(mv);

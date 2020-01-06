@@ -12,5 +12,4 @@ edition = "2018"
 base = { path="base" }
 engine = { path="engine" }
 uci = { path="uci" }
-vampirc-uci = "0.8.3"
 lazy_static = "1.4.0"

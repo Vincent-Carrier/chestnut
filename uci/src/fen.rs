@@ -1,12 +1,6 @@
-use crate::board::Board;
-use crate::moves::Side;
-use crate::moves::*;
-use crate::piece::Piece;
-use crate::piece::PieceKind;
-use crate::piece::PieceKind::King;
-use crate::piece::PieceKind::Queen;
-use crate::sq::Sq;
-use crate::state::State;
+use base::piece::PieceKind::King;
+use base::piece::PieceKind::Queen;
+use base::prelude::*;
 use vampirc_uci::UciFen;
 use vampirc_uci::UciSquare;
 
@@ -107,7 +101,7 @@ impl State {
 
 #[cfg(test)]
 mod tests {
-  use crate::prelude::*;
+  use base::prelude::*;
 
   #[test]
   fn fen_string_initial_state() {

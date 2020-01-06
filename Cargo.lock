@@ -69,7 +69,6 @@ version = "0.1.0"
 dependencies = [
  "base 0.1.0",
  "rand 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "vampirc-uci 0.8.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -228,7 +227,6 @@ dependencies = [
  "engine 0.1.0",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "uci 0.1.0",
- "vampirc-uci 0.8.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -266,6 +264,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "uci"
 version = "0.1.0"
 dependencies = [
+ "base 0.1.0",
  "vampirc-uci 0.8.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

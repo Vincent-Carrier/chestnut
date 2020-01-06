@@ -1,4 +1,5 @@
 extern crate vampirc_uci;
 
-mod engine;
-mod bridge;
+pub mod engine;
+pub mod bridge;
+pub mod fen;

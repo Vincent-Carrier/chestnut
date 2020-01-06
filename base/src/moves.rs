@@ -101,5 +101,22 @@ impl Move {
       }
     }
   }
+
+  pub fn parse(string: &str, board: &Board) -> Move {
+    let user_mv = UserMove {
+      from: Sq::parse(&string[..2]),
+      to: Sq::parse(&string[2..])
+    };
+    Move::from(user_mv, board)
+  }
+
+  pub fn from(user_mv: UserMove, board: &Board) -> Move {
+    // TODO
+    Move::Normal {
+      from: user_mv.from, to: user_mv.to,
+      piece: board[user_mv.from].unwrap(), capture: board[user_mv.to]
+    }
+  }
 }
 
+pub struct UserMove { from: Sq, to: Sq }

@@ -1,9 +1,6 @@
-extern crate vampirc_uci;
-
-// mod user_move;
+mod user_move;
 mod cli;
 mod game;
-mod uci_engine;
 
 use crate::game::Game;
 
